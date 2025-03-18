@@ -1,3 +1,22 @@
+import * as yaml from "yaml";
+
+interface overviewSettings {
+	from: string;
+	properties: string[];
+	sort?: string;
+}
+
+function settingsValid(data: any): data is overviewSettings {
+    return (
+        typeof data === 'object' &&
+        data !== null &&
+        typeof data.from === 'string' &&
+        Array.isArray(data.properties) &&
+        data.properties.every((item) => typeof item === 'string') &&
+		(data.sort === undefined || (typeof data.sort === 'string' && data.properties.includes(data.sort)))
+    );
+}
+
 export default function() {
 	return {
 		plugin: function(markdownIt, _options) {
@@ -31,7 +50,18 @@ export default function() {
 						`;
 				}
 
-				return renderContent("Frontmatter Overview");
+				let overviewSettings = null;
+				try {
+					overviewSettings = yaml.parse(token.content);
+				} catch (error) {
+					return renderContent(`YAML parsing error: ${error.message}`);
+				}
+
+				if (!settingsValid(overviewSettings)) {
+					return renderContent("Invalid overview settings");
+				}
+
+				return renderContent(yaml.stringify(overviewSettings));
 			};
 		},
 	}
