@@ -7,7 +7,7 @@ joplin.plugins.register({
 		await joplin.contentScripts.register(
 			ContentScriptType.MarkdownItPlugin,
 			'frontmatter-overview',
-			'./frontmatterOverview.js'
+			'./contentScript.js'
 		);
 	},
 });

@@ -1,4 +1,11 @@
-import * as yaml from "yaml";
+import * as yaml from 'js-yaml';
+
+document.addEventListener('joplin-noteDidUpdate', renderOverview);
+
+
+function renderContent(content, overview) {
+	overview.innerHTML = content;
+}
 
 interface overviewSettings {
 	from: string;
@@ -17,52 +24,26 @@ function settingsValid(data: any): data is overviewSettings {
     );
 }
 
-export default function() {
-	return {
-		plugin: function(markdownIt, _options) {
-			const defaultRender = markdownIt.renderer.rules.fence || function(tokens, idx, options, env, self) {
-				return self.renderToken(tokens, idx, options, env, self);
-			};
+function renderOverview() {
+	const overviews = document.getElementsByClassName('frontmatter-overview');
 
-			markdownIt.renderer.rules.fence = function (tokens, idx, options, env, self) {
-				const token = tokens[idx];
-				if (token.info !== 'frontmatter-overview') return defaultRender(tokens, idx, options, env, self);
+    for (let i=0; i<overviews.length; i++){
+        const overview = overviews[i];
 
-				function renderContent(message) {
-					// Rich text editor support:
-					// The joplin-editable and joplin-source CSS classes mark the generated div
-					// as a region that needs special processing when converting back to markdown.
-					// This element helps Joplin reconstruct the original markdown.
-					const richTextEditorMetadata = `
-						<pre
-							class="joplin-source"
-							data-joplin-language="frontmatter-overview"
-							data-joplin-source-open="\`\`\`frontmatter-overview\n"
-							data-joplin-source-close="\`\`\`"
-						>${markdownIt.utils.escapeHtml(token.content)}</pre>
-					`;
+		let overviewSettings = null;
+		try {
+			overviewSettings = yaml.load(overview.textContent) as overviewSettings;
+		}
+		catch (error) {
+			console.log("yaml parsing error:", error);
+			renderContent(`YAML parsing error: ${error.message}`, overview);
+			continue;
+		}
 
-					return `<div class="frontmatter-overview joplin-editable">
-								${richTextEditorMetadata}
-				
-								<p>${message}</p>
-							</div>
-						`;
-				}
-
-				let overviewSettings = null;
-				try {
-					overviewSettings = yaml.parse(token.content);
-				} catch (error) {
-					return renderContent(`YAML parsing error: ${error.message}`);
-				}
-
-				if (!settingsValid(overviewSettings)) {
-					return renderContent("Invalid overview settings");
-				}
-
-				return renderContent(yaml.stringify(overviewSettings));
-			};
-		},
+		if (!settingsValid(overviewSettings)) {
+			renderContent("Invalid overview settings", overview);
+			continue;
+		}
+		renderContent("async: " + yaml.dump(overviewSettings), overview);
 	}
 }
