@@ -9,5 +9,23 @@ joplin.plugins.register({
 			'frontmatter-overview',
 			'./contentScript.js'
 		);
+
+		await joplin.contentScripts.onMessage('frontmatter-overview', async (searchTerm) => {
+			let notes = [];
+			let pageNum = 1;
+			let response;
+			do {
+				response = await joplin.data.get(["search"], {
+					query: searchTerm,
+					type: "note",
+					page: pageNum,
+					fields: "id,title,body"
+				});
+				notes.push(...response["items"]);
+				pageNum++;
+			} while (response["has_more"])
+
+			return notes;
+		});
 	},
 });

@@ -2,6 +2,9 @@ import * as yaml from 'js-yaml';
 
 document.addEventListener('joplin-noteDidUpdate', renderOverview);
 
+declare const webviewApi: {
+	postMessage(contentScriptId: string, arg: unknown): Promise<any>;
+};
 
 function renderContent(content, overview) {
 	overview.innerHTML = content;
@@ -24,7 +27,24 @@ function settingsValid(data: any): data is overviewSettings {
     );
 }
 
-function renderOverview() {
+function makeTableOverview(notes) {
+	let tableOverview = `<table>
+								<tr>
+									<td> title </td>
+								</tr>
+							`;
+	for (const note of notes) {
+		tableOverview += `
+				<tr>
+					<td> <a href=":/${note["id"]}">${note["title"]}</a> </td>
+				</tr>
+		`;
+	}
+	tableOverview += '</table>'
+	return tableOverview;
+}
+
+async function renderOverview() {
 	const overviews = document.getElementsByClassName('frontmatter-overview');
 
     for (let i=0; i<overviews.length; i++){
@@ -44,6 +64,11 @@ function renderOverview() {
 			renderContent("Invalid overview settings", overview);
 			continue;
 		}
-		renderContent("async: " + yaml.dump(overviewSettings), overview);
+
+		// get notes
+		let notes = await webviewApi.postMessage('frontmatter-overview', overviewSettings.from);
+		let tableOverview = makeTableOverview(notes);
+
+		renderContent(tableOverview, overview);
 	}
 }
