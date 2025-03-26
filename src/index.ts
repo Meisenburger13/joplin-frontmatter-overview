@@ -74,9 +74,9 @@ async function getNotes(query) {
 			page: pageNum,
 			fields: "id,title,body"
 		});
-		notes.push(...response["items"]);
+		notes.push(...response.items);
 		pageNum++;
-	} while (response["has_more"])
+	} while (response.hasMore)
 
 	// exclude selected note from search
 	const selectedNoteId = (await joplin.workspace.selectedNote()).id

@@ -12,7 +12,6 @@ module.exports = {
 					const postMessageWithResponseTest =`
                         webviewApi.postMessage("${context.contentScriptId}", "${encodeURI(token.content)}")
 							.then(function(response) {
-								console.info("Got response from content script: ");
 								document.getElementById("frontmatter-overview-${idx}").innerHTML=response;
 							});
 						`;
