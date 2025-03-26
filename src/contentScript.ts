@@ -9,18 +9,20 @@ module.exports = {
 				markdownIt.renderer.rules.fence = function (tokens, idx, options, env, self) {
 					const token = tokens[idx];
 					if (token.info !== "frontmatter-overview") return defaultRender(tokens, idx, options, env, self);
+					const postMessageWithResponseTest =`
+                        webviewApi.postMessage("${context.contentScriptId}", "${encodeURI(token.content)}")
+							.then(function(response) {
+								console.info("Got response from content script: ");
+								document.getElementById("frontmatter-overview-${idx}").innerHTML=response;
+							});
+						`;
 
-					const contentHtml = markdownIt.utils.escapeHtml(token.content);
 					return `<div class="joplin-editable">
-								<div class="frontmatter-overview">${contentHtml}</div>
+								<div id="frontmatter-overview-${idx}"></div>
 							</div>
+							<style onload='${postMessageWithResponseTest.replace(/\n/g, ' ')}'></style>
 					`;
 				};
-			},
-			assets: function () {
-				return [
-					{name: "frontmatterOverview.js"}
-				]
 			}
 		}
 	}
