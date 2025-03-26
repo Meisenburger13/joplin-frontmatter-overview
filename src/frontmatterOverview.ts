@@ -50,20 +50,30 @@ function getFrontmatter(notes) {
 	return notes;
 }
 
-function makeTableOverview(notes) {
+function makeTableOverview(properties, notes) {
 	let tableOverview = `<table>
 								<tr>
 									<td> title </td>
-								</tr>
-							`;
+								`;
+	for (const prop of properties) {
+		tableOverview += `<td> ${prop} </td>`;
+	}
+	tableOverview += "</tr>";
 	for (const note of notes) {
 		tableOverview += `
 				<tr>
-					<td> <a href=":/${note["id"]}">${note["title"]}</a> </td>
-				</tr>
-		`;
+					<td> <a href=":/${note.id}">${note.title}</a> </td>
+				`;
+		for (const prop of properties) {
+			let propValue = "";
+			if (note.frontmatter.hasOwnProperty(prop)) {
+				propValue = note.frontmatter[prop];
+			}
+			tableOverview += `<td> ${propValue} </td>`;
+		}
+		tableOverview += "</tr>";
 	}
-	tableOverview += '</table>'
+	tableOverview += "</table>";
 	return tableOverview;
 }
 
@@ -92,7 +102,7 @@ async function renderOverview() {
 		let notes = await webviewApi.postMessage('frontmatter-overview', overviewSettings.from);
 		notes = getFrontmatter(notes);
 
- 		let tableOverview = makeTableOverview(notes);
+ 		let tableOverview = makeTableOverview(overviewSettings.properties, notes);
 
 		renderContent(tableOverview, overview);
 	}
