@@ -1,5 +1,10 @@
 import * as yaml from 'js-yaml';
 
+// Can't use import for this library because the types in the library
+// are declared incorrectly which result in typescript errors.
+// Reference -> https://github.com/jxson/front-matter/issues/76
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const frontmatter = require("front-matter");
 document.addEventListener('joplin-noteDidUpdate', renderOverview);
 
 declare const webviewApi: {
@@ -25,6 +30,24 @@ function settingsValid(data: any): data is overviewSettings {
         data.properties.every((item) => typeof item === 'string') &&
 		(data.sort === undefined || (typeof data.sort === 'string' && data.properties.includes(data.sort)))
     );
+}
+
+function getFrontmatter(notes) {
+	for (const note of notes) {
+		try {
+			const parsedFrontmatter = frontmatter(note.body);
+			note.frontmatter = parsedFrontmatter.attributes;
+		}
+		catch (error) {
+			const fixedFrontmatter = note.body.replace(
+				/:\s*(\[.*?]\(.*?\))/g, // Matches `: [some link](:/...)`
+				': "$1"'                // Wraps the value in double quotes
+    		);
+			const parsedFrontmatter = frontmatter(fixedFrontmatter);
+			note.frontmatter = parsedFrontmatter.attributes;
+		}
+	}
+	return notes;
 }
 
 function makeTableOverview(notes) {
@@ -67,7 +90,9 @@ async function renderOverview() {
 
 		// get notes
 		let notes = await webviewApi.postMessage('frontmatter-overview', overviewSettings.from);
-		let tableOverview = makeTableOverview(notes);
+		notes = getFrontmatter(notes);
+
+ 		let tableOverview = makeTableOverview(notes);
 
 		renderContent(tableOverview, overview);
 	}
