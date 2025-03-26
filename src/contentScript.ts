@@ -8,7 +8,7 @@ module.exports = {
 
 				markdownIt.renderer.rules.fence = function (tokens, idx, options, env, self) {
 					const token = tokens[idx];
-					if (token.info !== 'frontmatter-overview') return defaultRender(tokens, idx, options, env, self);
+					if (token.info !== "frontmatter-overview") return defaultRender(tokens, idx, options, env, self);
 
 					const contentHtml = markdownIt.utils.escapeHtml(token.content);
 					return `<div class="joplin-editable">
@@ -19,7 +19,7 @@ module.exports = {
 			},
 			assets: function () {
 				return [
-					{name: 'frontmatterOverview.js'}
+					{name: "frontmatterOverview.js"}
 				]
 			}
 		}

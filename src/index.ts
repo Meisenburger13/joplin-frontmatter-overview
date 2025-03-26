@@ -1,16 +1,16 @@
-import joplin from 'api';
-import {ContentScriptType} from 'api/types';
+import joplin from "api";
+import {ContentScriptType} from "api/types";
 
 joplin.plugins.register({
 	onStart: async function() {
 		console.log("frontmatter overview started!")
 		await joplin.contentScripts.register(
 			ContentScriptType.MarkdownItPlugin,
-			'frontmatter-overview',
-			'./contentScript.js'
+			"frontmatter-overview",
+			"./contentScript.js"
 		);
 
-		await joplin.contentScripts.onMessage('frontmatter-overview', async (searchTerm) => {
+		await joplin.contentScripts.onMessage("frontmatter-overview", async (searchTerm) => {
 			let notes = [];
 			let pageNum = 1;
 			let response;

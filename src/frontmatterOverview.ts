@@ -1,11 +1,11 @@
-import * as yaml from 'js-yaml';
+import * as yaml from "js-yaml";
 
 // Can't use import for this library because the types in the library
 // are declared incorrectly which result in typescript errors.
 // Reference -> https://github.com/jxson/front-matter/issues/76
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const frontmatter = require("front-matter");
-document.addEventListener('joplin-noteDidUpdate', renderOverview);
+document.addEventListener("joplin-noteDidUpdate", renderOverview);
 
 declare const webviewApi: {
 	postMessage(contentScriptId: string, arg: unknown): Promise<any>;
@@ -21,14 +21,14 @@ interface overviewSettings {
 	sort?: string;
 }
 
-function settingsValid(data: any): data is overviewSettings {
+function settingsValid(data): data is overviewSettings {
     return (
-        typeof data === 'object' &&
+        typeof data === "object" &&
         data !== null &&
-        typeof data.from === 'string' &&
+        typeof data.from === "string" &&
         Array.isArray(data.properties) &&
-        data.properties.every((item) => typeof item === 'string') &&
-		(data.sort === undefined || (typeof data.sort === 'string' && data.properties.includes(data.sort)))
+        data.properties.every((item) => typeof item === "string") &&
+		(data.sort === undefined || (typeof data.sort === "string" && data.properties.includes(data.sort)))
     );
 }
 
@@ -78,17 +78,15 @@ function makeTableOverview(properties, notes) {
 }
 
 async function renderOverview() {
-	const overviews = document.getElementsByClassName('frontmatter-overview');
+	const overviews = document.getElementsByClassName("frontmatter-overview");
 
-    for (let i=0; i<overviews.length; i++){
-        const overview = overviews[i];
-
+    for (const overview of overviews){
 		let overviewSettings = null;
 		try {
 			overviewSettings = yaml.load(overview.textContent) as overviewSettings;
 		}
 		catch (error) {
-			console.log("yaml parsing error:", error);
+			console.log("YAML parsing error:", error);
 			renderContent(`YAML parsing error: ${error.message}`, overview);
 			continue;
 		}
@@ -99,7 +97,7 @@ async function renderOverview() {
 		}
 
 		// get notes
-		let notes = await webviewApi.postMessage('frontmatter-overview', overviewSettings.from);
+		let notes = await webviewApi.postMessage("frontmatter-overview", overviewSettings.from);
 		notes = getFrontmatter(notes);
 		// sort notes
 		notes.sort((a, b) => {
