@@ -67,18 +67,25 @@ function settingsValid(data): data is overviewSettings {
 
 function getFrontmatter(notes) {
 	for (const note of notes) {
+		let parsedFrontmatter;
 		try {
-			const parsedFrontmatter = frontmatter(note.body);
-			note.frontmatter = parsedFrontmatter.attributes;
+			parsedFrontmatter = frontmatter(note.body);
 		}
 		catch (error) {
 			const fixedFrontmatter = note.body.replace(
 				/:\s*(\[.*?]\(.*?\))/g, // Matches `: [some link](:/...)`
 				': "$1"'                // Wraps the value in double quotes
     		);
-			const parsedFrontmatter = frontmatter(fixedFrontmatter);
-			note.frontmatter = parsedFrontmatter.attributes;
+			try {
+				parsedFrontmatter = frontmatter(fixedFrontmatter);
+			}
+			catch (error){
+				console.error(`Error in frontmatter in note: ${note.title}`, error);
+				note.frontmatter = {};
+				continue;
+			}
 		}
+		note.frontmatter = parsedFrontmatter.attributes;
 	}
 	return notes;
 }
