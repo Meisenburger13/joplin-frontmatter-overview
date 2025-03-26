@@ -110,6 +110,21 @@ function getFrontmatter(notes) {
 	return notes;
 }
 
+function makeLinks(notes) {
+	for (const note of notes) {
+		for (const [key, value] of Object.entries(note.frontmatter)) {
+			if (typeof value === "string") {
+				// Replace Markdown links with HTML links
+				note.frontmatter[key] = value.replace(
+					/\[([^\]]+)\]\(([^\)]+)\)/g,
+					'<a href="$2">$1</a>'
+				);
+			}
+		}
+	}
+	return notes;
+}
+
 function makeTableOverview(properties, notes) {
 	let tableOverview = `<table>
 								<tr>
@@ -150,6 +165,8 @@ async function renderOverview(overview:string) {
 		}
 		return 0;
 	})
+	// convert Markdown links to html
+	notes = makeLinks(notes);
 
 	return makeTableOverview(overviewSettings.properties, notes);
 }
