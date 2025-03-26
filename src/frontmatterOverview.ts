@@ -101,6 +101,16 @@ async function renderOverview() {
 		// get notes
 		let notes = await webviewApi.postMessage('frontmatter-overview', overviewSettings.from);
 		notes = getFrontmatter(notes);
+		// sort notes
+		notes.sort((a, b) => {
+			if (a.frontmatter[overviewSettings.sort] < b.frontmatter[overviewSettings.sort]) {
+				return -1;
+			}
+			else if (a.frontmatter[overviewSettings.sort] > b.frontmatter[overviewSettings.sort]) {
+				return 1;
+			}
+			return 0;
+		})
 
  		let tableOverview = makeTableOverview(overviewSettings.properties, notes);
 
