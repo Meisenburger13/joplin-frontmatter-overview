@@ -25,6 +25,10 @@ joplin.plugins.register({
 				pageNum++;
 			} while (response["has_more"])
 
+			// exclude selected note from search
+			const selectedNoteId = (await joplin.workspace.selectedNote()).id
+			notes = notes.filter((note) => note.id !== selectedNoteId);
+
 			return notes;
 		});
 	},
