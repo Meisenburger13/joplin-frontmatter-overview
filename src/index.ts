@@ -30,6 +30,11 @@ function settingsValid(data): data is overviewSettings {
     );
 }
 
+function sortValid(overviewSettings) {
+	return overviewSettings.sort === undefined ||
+		overviewSettings.properties.some( ({original}) => original === overviewSettings.sort)
+}
+
 function getOverviewSettings(overview) {
 	let overviewSettings = null;
 	try {
@@ -45,14 +50,14 @@ function getOverviewSettings(overview) {
 	}
 	// get aliases
 	overviewSettings.properties = overviewSettings.properties.map(prop => {
-		const match = (prop as string).match(/^(.+?)\s+AS\s+(.+)$/i);
+		const match = prop.match(/^(.+?)\s+AS\s+(.+)$/i);
 		return match
 			? { original: match[1].trim(), alias: match[2].trim() }
 			: { original: prop, alias: prop };
 	});
 	// check sort
-	if (!(overviewSettings.properties as PropertyNames[]).some( ({original}) => original === overviewSettings.sort)) {
-		return "Invalid sort parameter: Please check that it matches one of the original parameter names.";
+	if (!sortValid(overviewSettings)) {
+		return "Invalid sort parameter: Please check that it matches one of the original property names."
 	}
 
 	return overviewSettings;
