@@ -126,21 +126,17 @@ function makeLinks(notes) {
 }
 
 function makeTableOverview(properties, notes) {
-	let tableOverview = `<table>
-								<tr>
-									<td> title </td>
-								`;
-	for (const prop of properties) {
-		tableOverview += `<td> ${prop.alias} </td>`;
+	let tableOverview = "<table><tr>";
+	for (const prop of properties.map(subarray => subarray["alias"])) {
+		tableOverview += `<td> ${prop} </td>`;
 	}
 	tableOverview += "</tr>";
 	for (const note of notes) {
-		tableOverview += `
-				<tr>
-					<td> <a href=":/${note.id}">${note.title}</a> </td>
-				`;
-		for (const prop of properties) {
-			const propValue = note.frontmatter[prop.original] || "";
+		for (const prop of properties.map(subarray => subarray["original"])) {
+			let propValue = note.frontmatter[prop] || "";
+			if (prop === "NOTE_LINK") {
+				propValue = `<a href=":/${note.id}">${note.title}</a>`;
+			}
 			tableOverview += `<td> ${propValue} </td>`;
 		}
 		tableOverview += "</tr>";
