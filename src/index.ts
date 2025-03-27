@@ -17,6 +17,7 @@ interface overviewSettings {
 	from: string;
 	properties: string[] | PropertyNames[];
 	sort?: string;
+	reverseSort: boolean;
 }
 
 function settingsValid(data): data is overviewSettings {
@@ -55,6 +56,11 @@ function getOverviewSettings(overview) {
 			? { original: match[1].trim(), alias: match[2].trim() }
 			: { original: prop, alias: prop };
 	});
+
+	if (overviewSettings.sort.endsWith(" DESC")) {
+		overviewSettings.reverseSort = true;
+		overviewSettings.sort = overviewSettings.sort.slice(0, -5);
+	}
 	// check sort
 	if (!sortValid(overviewSettings)) {
 		return "Invalid sort parameter: Please check that it matches one of the original property names."
@@ -180,7 +186,9 @@ async function renderOverview(overview:string) {
 	notes = getFrontmatter(notes);
 	// sort notes
 	notes.sort((a, b) => { return sortNotes(a, b, overviewSettings.sort) });
-
+	if (overviewSettings.reverseSort) {
+		notes = notes.reverse();
+	}
 	// convert Markdown links to html
 	notes = makeLinks(notes);
 
