@@ -57,7 +57,7 @@ function getOverviewSettings(overview) {
 			: { original: prop, alias: prop };
 	});
 
-	if (overviewSettings.sort.endsWith(" DESC")) {
+	if (overviewSettings.sort && overviewSettings.sort.endsWith(" DESC")) {
 		overviewSettings.reverseSort = true;
 		overviewSettings.sort = overviewSettings.sort.slice(0, -5);
 	}
