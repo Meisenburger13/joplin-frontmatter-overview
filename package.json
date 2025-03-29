@@ -29,6 +29,8 @@
   },
   "dependencies": {
     "front-matter": "^4.0.2",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "@joplin/turndown": "^4.0.79",
+    "@joplin/turndown-plugin-gfm": "1.0.56"
   }
 }

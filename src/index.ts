@@ -1,6 +1,8 @@
 import joplin from "api";
 import {ContentScriptType} from "api/types";
 import * as yaml from "js-yaml";
+import TurndownService = require("@joplin/turndown");
+const tables = require('@joplin/turndown-plugin-gfm').tables;
 // Can't use import for this library because the types in the library
 // are declared incorrectly which result in typescript errors.
 // Reference -> https://github.com/jxson/front-matter/issues/76
@@ -196,6 +198,25 @@ async function renderOverview(overview:string) {
 	return makeTableOverview(overviewSettings.properties, notes);
 }
 
+async function makeTablesPermanent() {
+	const selectedNote = await joplin.workspace.selectedNote();
+	if (!selectedNote) { return; }
+
+	let body:string = selectedNote.body;
+	const overviews = body.matchAll(/```frontmatter-overview\n([\s\S]*?)```/g);
+
+	const turndownService = new TurndownService();
+	turndownService.use(tables);
+
+	// turn HTML tables to MD
+	for (const overview of overviews) {
+		const tableHTML = await renderOverview(overview[1]);
+		const markdownTable = turndownService.turndown(tableHTML);
+		body = body.replace(overview[0], markdownTable);
+		await joplin.data.put(["notes", selectedNote.id], null, { body: body });
+	}
+}
+
 
 joplin.plugins.register({
 	onStart: async function() {
@@ -205,6 +226,18 @@ joplin.plugins.register({
 			"frontmatter-overview",
 			"./contentScript.js"
 		);
+
+		await joplin.commands.register({
+			name: "makeTablesPermanent",
+			label: "Make tables in current note permanent",
+			execute: async () => {
+				await makeTablesPermanent();
+			}
+		});
+
+		await joplin.views.menus.create('frontmatter-overview-menu', 'Frontmatter overview', [
+			{ label: "Make tables in current note permanent", commandName: "makeTablesPermanent" }
+		]);
 
 		await joplin.contentScripts.onMessage("frontmatter-overview", async (overviewString) => {
 			const overview = decodeURI(overviewString);
