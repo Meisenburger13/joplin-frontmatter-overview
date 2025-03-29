@@ -148,10 +148,12 @@ function makeLinks(notes) {
 		for (const [key, value] of Object.entries(note.frontmatter)) {
 			if (typeof value === "string") {
 				// Replace Markdown links with HTML links
-				note.frontmatter[key] = value.replace(
-					/\[([^\]]+)\]\(([^\)]+)\)/g,
-					'<a href="$2">$1</a>'
-				);
+				const links = value.matchAll(/\[(.*?)]\((.*?)\)/g);
+				for (const link of links) {
+					const titleDiv = document.createElement("div");
+					titleDiv.textContent = link[1];
+					note.frontmatter[key] = `<a href="${link[2]}">${titleDiv.innerHTML}</a>`;
+				}
 			}
 		}
 	}
@@ -159,16 +161,18 @@ function makeLinks(notes) {
 }
 
 function makeTableOverview(properties, notes) {
-	let tableOverview = "<table><tr>";
+	let tableOverview = "<table><thead>";
 	for (const prop of properties.map(subarray => subarray["alias"])) {
 		tableOverview += `<td> ${prop} </td>`;
 	}
-	tableOverview += "</tr>";
+	tableOverview += "</thead>";
 	for (const note of notes) {
 		for (const prop of properties.map(subarray => subarray["original"])) {
 			let propValue = note.frontmatter[prop] || "";
 			if (prop === "NOTE_LINK") {
-				propValue = `<a href=":/${note.id}">${note.title}</a>`;
+				const titleDiv = (document.createElement("div"));
+				titleDiv.textContent = note.title;
+				propValue = `<a href=":/${note.id}">${titleDiv.innerHTML}</a>`;
 			}
 			tableOverview += `<td> ${propValue} </td>`;
 		}
