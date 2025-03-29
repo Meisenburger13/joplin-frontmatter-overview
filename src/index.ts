@@ -94,22 +94,17 @@ async function getNotes(query) {
 function getFrontmatter(notes) {
 	for (const note of notes) {
 		let parsedFrontmatter;
+		const wrapLinksInFm = note.body.replace(
+			/: (.*\[.*]\(.*\).*)/g, // Matches `: [some link](:/...)`
+			': "$1"'                // Wraps the value in double quotes
+		);
 		try {
-			parsedFrontmatter = frontmatter(note.body);
+			parsedFrontmatter = frontmatter(wrapLinksInFm);
 		}
-		catch (error) {
-			const fixedFrontmatter = note.body.replace(
-				/:\s*(\[.*?]\(.*?\))/g, // Matches `: [some link](:/...)`
-				': "$1"'                // Wraps the value in double quotes
-    		);
-			try {
-				parsedFrontmatter = frontmatter(fixedFrontmatter);
-			}
-			catch (error){
-				console.error(`Error in frontmatter in note: ${note.title}`, error);
-				note.frontmatter = {};
-				continue;
-			}
+		catch (error){
+			console.error(`Error in frontmatter in note: ${note.title}`, error);
+			note.frontmatter = {};
+			continue;
 		}
 		note.frontmatter = parsedFrontmatter.attributes;
 	}
@@ -145,14 +140,16 @@ function sortNotes(a, b, sort) {
 
 function makeLinks(notes) {
 	for (const note of notes) {
-		for (const [key, value] of Object.entries(note.frontmatter)) {
+		for (let [key, value] of Object.entries(note.frontmatter)) {
 			if (typeof value === "string") {
+				let strValue = value as string;
 				// Replace Markdown links with HTML links
-				const links = value.matchAll(/\[(.*?)]\((.*?)\)/g);
+				const links = strValue.matchAll(/\[(.*?)]\((.*?)\)/g);
 				for (const link of links) {
 					const titleDiv = document.createElement("div");
 					titleDiv.textContent = link[1];
-					note.frontmatter[key] = `<a href="${link[2]}">${titleDiv.innerHTML}</a>`;
+					strValue = strValue.replace(link[0], `<a href="${link[2]}">${titleDiv.innerHTML}</a>`);
+					note.frontmatter[key] = strValue;
 				}
 			}
 		}
