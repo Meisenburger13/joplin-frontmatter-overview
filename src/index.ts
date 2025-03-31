@@ -229,6 +229,14 @@ async function makeTablesPermanent() {
 
 	const turndownService = new TurndownService();
 	turndownService.use(tables);
+	turndownService.addRule("imageToMarkdown", {
+		filter: "img",
+		replacement: function (_, node) {
+			const alt = node.getAttribute("alt");
+			const id = node.getAttribute("data-resource-id");
+			return `![${alt}](:/${id})`;
+		}
+	});
 
 	// turn HTML tables to MD
 	for (const overview of overviews) {
