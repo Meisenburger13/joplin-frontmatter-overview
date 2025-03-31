@@ -140,6 +140,26 @@ function sortNotes(a, b, sort) {
 	}
 }
 
+async function makeImages(notes) {
+	for (const note of notes) {
+		for (let [key, value] of Object.entries(note.frontmatter)) {
+			if (typeof value !== "string") { continue; }
+
+			let strValue = value as string;
+			// Replace images with HTML
+			const images = strValue.matchAll(/!\[(.*)\]\(:\/([a-z0-9]{32})\)/g);
+			for (const [mdImage, imageName, imageID] of images) {
+				const filePath = await joplin.data.resourcePath(imageID);
+				const imageDiv = document.createElement("div");
+				imageDiv.textContent = imageName;
+				strValue = strValue.replace(mdImage, `<img data-resource-id="${imageID}" src="joplin-content://note-viewer/${filePath}" alt="${imageDiv.innerHTML}">`);
+				note.frontmatter[key] = strValue;
+			}
+		}
+	}
+	return notes;
+}
+
 function makeLinks(notes) {
 	for (const note of notes) {
 		for (let [key, value] of Object.entries(note.frontmatter)) {
@@ -192,6 +212,8 @@ async function renderOverview(overview:string) {
 	if (overviewSettings.reverseSort) {
 		notes = notes.reverse();
 	}
+	// convert images to html
+	notes = await makeImages(notes);
 	// convert Markdown links to html
 	notes = makeLinks(notes);
 
