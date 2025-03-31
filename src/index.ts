@@ -147,12 +147,12 @@ async function makeImages(notes) {
 
 			let strValue = value as string;
 			// Replace images with HTML
-			const images = strValue.matchAll(/!\[(.*)\]\(:\/([a-z0-9]{32})\)/g);
-			for (const [mdImage, imageName, imageID] of images) {
-				const filePath = await joplin.data.resourcePath(imageID);
+			const images = strValue.matchAll(/!\[(.*?)]\(:\/([a-z0-9]{32})\)/g);
+			for (const [mdImage, alt, id] of images) {
+				const path = await joplin.data.resourcePath(id);
 				const imageDiv = document.createElement("div");
-				imageDiv.textContent = imageName;
-				strValue = strValue.replace(mdImage, `<img data-resource-id="${imageID}" src="joplin-content://note-viewer/${filePath}" alt="${imageDiv.innerHTML}">`);
+				imageDiv.textContent = alt;
+				strValue = strValue.replace(mdImage, `<img data-resource-id="${id}" src="joplin-content://note-viewer/${path}" alt="${alt}">`);
 				note.frontmatter[key] = strValue;
 			}
 		}
@@ -167,10 +167,10 @@ function makeLinks(notes) {
 				let strValue = value as string;
 				// Replace Markdown links with HTML links
 				const links = strValue.matchAll(/\[(.*?)]\((.*?)\)/g);
-				for (const link of links) {
+				for (const [mdLink, title, url] of links) {
 					const titleDiv = document.createElement("div");
-					titleDiv.textContent = link[1];
-					strValue = strValue.replace(link[0], `<a href="${link[2]}">${titleDiv.innerHTML}</a>`);
+					titleDiv.textContent = title;
+					strValue = strValue.replace(mdLink, `<a href="${url}">${titleDiv.innerHTML}</a>`);
 					note.frontmatter[key] = strValue;
 				}
 			}
