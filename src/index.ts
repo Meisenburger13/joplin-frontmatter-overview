@@ -53,7 +53,7 @@ function getOverviewSettings(overview) {
 	}
 	// get aliases
 	overviewSettings.properties = overviewSettings.properties.map(prop => {
-		const match = prop.match(/^(.+?)\s+AS\s+(.+)$/i);
+		const match = prop.match(/^(.+?)\s+AS\s+(.+)$/);
 		return match
 			? { original: match[1].trim(), alias: match[2].trim() }
 			: { original: prop, alias: prop };
