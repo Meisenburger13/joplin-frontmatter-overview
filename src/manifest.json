@@ -4,13 +4,18 @@
 	"app_min_version": "2.13",
 	"version": "1.0.0",
 	"name": "Frontmatter Overview",
-	"description": "Renders a table with data from notes with frontmatter.",
+	"description": "Create dynamic tables based on frontmatter in your notes.",
 	"author": "Meisenburger13",
 	"homepage_url": "https://github.com/Meisenburger13/joplin-frontmatter-overview",
 	"repository_url": "https://github.com/Meisenburger13/joplin-frontmatter-overview",
-	"keywords": [],
-	"categories": [],
-	"screenshots": [],
+	"keywords": ["frontmatter", "overview"],
+	"categories": ["viewer"],
+	"screenshots": [
+		{
+		  "src": "img/example1.png",
+		  "label": "Screenshot: Example 1"
+		}
+	],
 	"icons": {},
 	"platforms": ["desktop", "mobile"]
 }
