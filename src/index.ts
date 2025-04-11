@@ -1,8 +1,8 @@
 import joplin from "api";
 import {ContentScriptType} from "api/types";
 import * as yaml from "js-yaml";
-import TurndownService = require("@joplin/turndown");
-const tables = require('@joplin/turndown-plugin-gfm').tables;
+import TurndownService = require("turndown");
+const tables = require('turndown-plugin-gfm').tables;
 // Can't use import for this library because the types in the library
 // are declared incorrectly which result in typescript errors.
 // Reference -> https://github.com/jxson/front-matter/issues/76
