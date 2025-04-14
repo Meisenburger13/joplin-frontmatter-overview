@@ -15,9 +15,18 @@ module.exports = {
 								document.getElementById("frontmatter-overview-${idx}").innerHTML=response;
 							});
 						`;
+					const richTextEditorMetadata = `
+ 						<pre
+ 							class="joplin-source"
+ 							data-joplin-language="button-counter"
+ 							data-joplin-source-open="\`\`\`button-counter\n"
+ 							data-joplin-source-close="\`\`\`"
+ 						>${markdownIt.utils.escapeHtml(token.content)}</pre>
+ 					`;
 
 					return `<div class="joplin-editable">
-								<div id="frontmatter-overview-${idx}"></div>
+								${richTextEditorMetadata}
+								<div id="frontmatter-overview-${idx}">Loading frontmatter overview...</div>
 							</div>
 							<style onload='${postMessageWithResponseTest.replace(/\n/g, ' ')}'></style>
 					`;
