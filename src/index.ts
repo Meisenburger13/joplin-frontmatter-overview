@@ -9,6 +9,16 @@ const tables = require('turndown-plugin-gfm').tables;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const frontmatter = require("front-matter");
 
+const isMobilePlatform = async () => {
+	try {
+		const version = await joplin.versionInfo() as any;
+		return version?.platform === 'mobile';
+	} catch(error) {
+		console.warn('Error checking whether the device is a mobile device. Assuming desktop.', error);
+		return false;
+	}
+};
+
 
 interface PropertyNames {
 	original: string,
@@ -152,7 +162,15 @@ async function makeImages(notes) {
 				const path = await joplin.data.resourcePath(id);
 				const imageDiv = document.createElement("div");
 				imageDiv.textContent = alt;
-				strValue = strValue.replace(mdImage, `<img data-resource-id="${id}" src="joplin-content://note-viewer/${path}" alt="${alt}">`);
+				const isMobile = await isMobilePlatform();
+				let src:  string;
+				if (isMobile) {
+					src = `file:///`;
+				}
+				else {
+					src = `joplin-content://note-viewer/`;
+				}
+				strValue = strValue.replace(mdImage, `<img src="${src}${path}" alt="${alt}">`);
 				note.frontmatter[key] = strValue;
 			}
 		}
