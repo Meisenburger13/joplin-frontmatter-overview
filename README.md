@@ -1,12 +1,12 @@
-# Joplin plugin — frontmatter overview
+# Joplin Plugin — Frontmatter Overview
 Create dynamic tables based on frontmatter in your notes. Works on both desktop and mobile.
 
 ## Quick Example
 
 Given these two notes in a notebook called `Books 2025`:
 
-| Note 1                                                                                         | Note 2                                                                                   |
-|------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| Note 1                                                                            | Note 2                                                                      |
+|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
 | <pre>---<br>title: Book 1<br>rating: 5<br><br>---<br>Thoughts about book...</pre> | <pre>---<br>title: Book 2<br>author: Author 2<br>rating: 2<br><br>---</pre> |
 
 Using the following code block in a note:
@@ -60,7 +60,8 @@ rating: 5
 ---
 ```
 
-This plugin supports Markdown links and images in the frontmatter, although they are not valid YAML.  
+This plugin supports Markdown links and images in the frontmatter, although they are not valid YAML.
+Images need to be Joplin resources in order to be rendered correctly.  
 A note with invalid YAML syntax will be shown with empty values in the custom properties.
 Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix the syntax.
 
@@ -68,11 +69,11 @@ Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix the
 
 ## Overview Block Options
 
-| Key          | Description                                                                                                                          |
-|--------------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `from`       | Joplin search filter based on this [syntax](https://joplinapp.org/help/apps/search/) — all matching notes become a row in the table. |
-| `properties` | List of frontmatter fields or [special properties](#special-properties).<br> Use `AS` to rename the property in the table header.    |
-| `sort`       | (Optional) Sort the table by a property (add `DESC` for descending). <br> Value needs to match one of the original property names.   |
+| Key          | Description                                                                                                                                                            |
+|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `from`       | Joplin search filter based on this [syntax](https://joplinapp.org/help/apps/search/) — all matching notes become a row in the table.                                   |
+| `properties` | List of frontmatter fields or [special properties](#special-properties) — each will be a column in the table.<br> Use `AS` to rename the property in the table header. |
+| `sort`       | (Optional) Sort the table by a property (add `DESC` for descending). <br> Value needs to match one of the original property names.                                     |
 
 ---
 
