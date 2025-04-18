@@ -30,16 +30,18 @@ interface overviewSettings {
 	properties: string[] | PropertyNames[];
 	sort?: string;
 	reverseSort: boolean;
+	excludeEmpty?: boolean;
 }
 
-function settingsValid(data): data is overviewSettings {
+function settingsValid(settings): settings is overviewSettings {
     return (
-        typeof data === "object" &&
-        data !== null &&
-        typeof data.from === "string" &&
-        Array.isArray(data.properties) &&
-        data.properties.every((item) => typeof item === "string") &&
-		(data.sort === undefined || typeof data.sort === "string")
+        typeof settings === "object" &&
+        settings !== null &&
+        typeof settings.from === "string" &&
+        Array.isArray(settings.properties) &&
+        settings.properties.every((item) => typeof item === "string") &&
+		(settings.sort === undefined || typeof settings.sort === "string") &&
+		(settings.excludeEmpty === undefined || typeof settings.excludeEmpty === "boolean")
     );
 }
 
@@ -228,6 +230,10 @@ async function renderOverview(overview:string) {
 	// get notes
 	let notes = await getNotes(overviewSettings.from);
 	notes = getFrontmatter(notes);
+	// keep only notes with frontmatter if excludeEmpty
+	if (overviewSettings.excludeEmpty) {
+		notes = notes.filter(i => Object.keys(i.frontmatter).length > 0);
+	}
 	// sort notes
 	notes.sort((a, b) => { return sortNotes(a, b, overviewSettings.sort) });
 	if (overviewSettings.reverseSort) {
