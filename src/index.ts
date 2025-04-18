@@ -107,8 +107,11 @@ function getFrontmatter(notes) {
 	for (const note of notes) {
 		let parsedFrontmatter;
 		const wrapLinksInFm = note.body.replace(
-			/: (.*\[.*]\(.*\).*)/g, // Matches `: [some link](:/...)`
-			': "$1"'                // Wraps the value in double quotes
+			/: (.*\[.*]\(.*\).*)/g,
+			(_match, p1) => {
+				const escaped = p1.replace(/"/g, '\\"'); // Escape existing double quotes
+				return `: "${escaped}"`;                 // Wrap in quotes
+			}
 		);
 		try {
 			parsedFrontmatter = frontmatter(wrapLinksInFm);
