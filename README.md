@@ -69,11 +69,12 @@ Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix the
 
 ## Overview Block Options
 
-| Key          | Description                                                                                                                                                            |
-|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `from`       | Joplin search filter based on this [syntax](https://joplinapp.org/help/apps/search/) — all matching notes become a row in the table.                                   |
-| `properties` | List of frontmatter fields or [special properties](#special-properties) — each will be a column in the table.<br> Use `AS` to rename the property in the table header. |
-| `sort`       | (Optional) Sort the table by a property (add `DESC` for descending). <br> Value needs to match one of the original property names.                                     |
+| Key            | Description                                                                                                                                                            |
+|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `from`         | Joplin search filter based on this [syntax](https://joplinapp.org/help/apps/search/) — all matching notes become a row in the table.                                   |
+| `properties`   | List of frontmatter fields or [special properties](#special-properties) — each will be a column in the table.<br> Use `AS` to rename the property in the table header. |
+| `sort`         | (Optional) Sort the table by a property (add `DESC` for descending). <br> Value needs to match one of the original property names.                                     |
+| `excludeEmpty` | (Optional) Exclude notes without frontmatter from overview. <br> Value is a boolean, default `False`.                                                                  |
 
 ---
 
@@ -90,6 +91,7 @@ Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix the
 - Notes missing a property will have an empty cell.
 - Notes with invalid frontmatter are included with empty custom property values (special properties like `NOTE_LINK` still work).
 - The note containing the code block is excluded from the search.
+- Set the maximum width and height of images in the settings.
 
 ---
 
