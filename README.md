@@ -14,6 +14,7 @@ Using the following code block in a note:
     ```frontmatter-overview
     from: notebook:"Books 2025"
     properties:
+      - LINE_NUM AS Number
       - NOTE_LINK AS Title
       - title AS Book
       - author
@@ -23,10 +24,10 @@ Using the following code block in a note:
 
 Will generate this table:
 
-| Title      | Book   | author   | ⭐ |
-|------------|--------|----------|---|
-| [Note 1]() | Book 1 |          | 5 |
-| [Note 2]() | Book 2 | Author 2 | 2 |
+| Number | Title      | Book         | author   | ⭐ |
+|--------|------------|--------------|----------|---|
+| 1      | [Note 1]() | Book 1       |          | 5 |
+| 2      | [Note 2]() | Book 2       | Author 2 | 2 |
 
 ---
 
@@ -81,6 +82,7 @@ Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix the
 ## Special Properties
 
 - `NOTE_LINK`: A clickable link to the note using its title.
+- `LINE_NUM`: The line number.
 
 ---
 

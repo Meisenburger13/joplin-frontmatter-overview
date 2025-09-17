@@ -46,8 +46,9 @@ function settingsValid(settings): settings is overviewSettings {
 }
 
 function sortValid(overviewSettings) {
-	return overviewSettings.sort === undefined ||
-		overviewSettings.properties.some( ({original}) => original === overviewSettings.sort)
+	return (overviewSettings.sort === undefined ||
+		overviewSettings.properties.some( ({original}) => original === overviewSettings.sort))
+	&& overviewSettings.sort !== "LINE_NUM"
 }
 
 function getOverviewSettings(overview) {
@@ -77,7 +78,7 @@ function getOverviewSettings(overview) {
 	}
 	// check sort
 	if (!sortValid(overviewSettings)) {
-		return "Invalid sort parameter: Please check that it matches one of the original property names."
+		return "Invalid sort parameter: Please check that it matches one of the original property names, except LINE_NUM."
 	}
 
 	return overviewSettings;
@@ -208,7 +209,7 @@ function makeTableOverview(properties, notes) {
 		tableOverview += `<td> ${prop} </td>`;
 	}
 	tableOverview += "</thead>";
-	for (const note of notes) {
+	notes.forEach((note, index)  => {
 		for (const prop of properties.map(subarray => subarray["original"])) {
 			let propValue = note.frontmatter[prop] || "";
 			if (prop === "NOTE_LINK") {
@@ -216,10 +217,13 @@ function makeTableOverview(properties, notes) {
 				titleDiv.textContent = note.title;
 				propValue = `<a href=":/${note.id}">${titleDiv.innerHTML}</a>`;
 			}
+			else if (prop === "LINE_NUM") {
+				propValue = (index + 1).toString();
+			}
 			tableOverview += `<td> ${propValue} </td>`;
 		}
 		tableOverview += "</tr>";
-	}
+	});
 	tableOverview += "</table>";
 	return tableOverview;
 }
