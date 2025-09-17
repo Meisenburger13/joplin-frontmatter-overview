@@ -270,7 +270,7 @@ async function makeTablesPermanent() {
 	for (const overview of overviews) {
 		const tableHTML = await renderOverview(overview[1]);
 		const markdownTable = turndownService.turndown(tableHTML);
-		body = body.replace(overview[0], markdownTable);
+		body = body.replace(overview[0], markdownTable + "\n");
 		await joplin.data.put(["notes", selectedNote.id], null, { body: body });
 	}
 }
