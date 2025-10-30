@@ -9,6 +9,9 @@ import { tables } from "turndown-plugin-gfm";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const frontmatter = require("front-matter");
 
+const LINE_NUM = "LINE_NUM";
+const NOTE_LINK = "NOTE_LINK";
+
 const isMobilePlatform = async () => {
 	try {
 		const version = await joplin.versionInfo() as any;
@@ -48,7 +51,7 @@ function settingsValid(settings): settings is overviewSettings {
 function sortValid(overviewSettings) {
 	return (overviewSettings.sort === undefined ||
 		overviewSettings.properties.some( ({original}) => original === overviewSettings.sort))
-	&& overviewSettings.sort !== "LINE_NUM"
+	&& overviewSettings.sort !== LINE_NUM
 }
 
 function getOverviewSettings(overview) {
@@ -78,7 +81,7 @@ function getOverviewSettings(overview) {
 	}
 	// check sort
 	if (!sortValid(overviewSettings)) {
-		return "Invalid sort parameter: Please check that it matches one of the original property names, except LINE_NUM."
+		return `Invalid sort parameter: Please check that it matches one of the original property names, except ${LINE_NUM}.`
 	}
 
 	return overviewSettings;
@@ -132,7 +135,7 @@ function getFrontmatter(notes) {
 function sortNotes(a, b, sort) {
 	let valueA, valueB;
 
-	if (sort === "NOTE_LINK") {
+	if (sort === NOTE_LINK) {
 		valueA = a.title;
 		valueB = b.title;
 	} else {
@@ -212,12 +215,12 @@ function makeTableOverview(properties, notes) {
 	notes.forEach((note, index)  => {
 		for (const prop of properties.map(subarray => subarray["original"])) {
 			let propValue = note.frontmatter[prop] || "";
-			if (prop === "NOTE_LINK") {
+			if (prop === NOTE_LINK) {
 				const titleDiv = (document.createElement("div"));
 				titleDiv.textContent = note.title;
 				propValue = `<a href=":/${note.id}">${titleDiv.innerHTML}</a>`;
 			}
-			else if (prop === "LINE_NUM") {
+			else if (prop === LINE_NUM) {
 				propValue = (index + 1).toString();
 			}
 			tableOverview += `<td> ${propValue} </td>`;
