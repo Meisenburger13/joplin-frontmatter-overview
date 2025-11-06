@@ -100,7 +100,7 @@ async function getNotes(query) {
 		});
 		notes.push(...response.items);
 		pageNum++;
-	} while (response.hasMore)
+	} while (response.has_more)
 
 	// exclude selected note from search
 	const selectedNoteId = (await joplin.workspace.selectedNote()).id
