@@ -1,8 +1,6 @@
-import { propertyNames } from "../models";
-
 export interface overviewSettings {
 	from: string;
-	properties: string[] | propertyNames[];
+	properties: any;
 	sort?: string;
 	reverseSort: boolean;
 	excludeEmpty?: boolean;
