@@ -35,7 +35,9 @@ export async function renderOverview(overview:string) {
 	if (typeof overviewSettings === "string") { return overviewSettings; }
 	// get notes
 	let notes = await getNotes(overviewSettings.from);
-	notes = getFrontmatter(notes);
+	for (const note of notes) {
+		note.frontmatter = getFrontmatter(note.body);
+	}
 	// keep only notes with frontmatter if excludeEmpty
 	if (overviewSettings.excludeEmpty) {
 		notes = notes.filter(i => Object.keys(i.frontmatter).length > 0);

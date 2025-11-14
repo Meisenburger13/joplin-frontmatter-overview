@@ -4,25 +4,22 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const frontmatter = require("front-matter");
 
-export function getFrontmatter(notes) {
-	for (const note of notes) {
-		let parsedFrontmatter;
-		const wrapLinksInFm = note.body.replace(
-			/: (.*\[.*]\(.*\).*)/g,
-			(_match, p1) => {
-				const escaped = p1.replace(/"/g, '\\"'); // Escape existing double quotes
-				return `: "${escaped}"`;                 // Wrap in quotes
-			}
-		);
-		try {
-			parsedFrontmatter = frontmatter(wrapLinksInFm);
-		}
-		catch (error){
-			console.error(`Error in frontmatter in note: ${note.title}`, error);
-			note.frontmatter = {};
-			continue;
-		}
-		note.frontmatter = parsedFrontmatter.attributes;
+const escapeLinksInFrontmatter = (note: string) => {
+	return note.replace(/: (.*\[.*]\(.*\).*)/g,
+		(_, value) => {
+			const escaped = value.replace(/"/g, '\\"'); // Escape existing double quotes
+			return `: "${escaped}"`;                 // Wrap in quotes
+		});
+}
+
+export function getFrontmatter(note: string) {
+	note = escapeLinksInFrontmatter(note);
+	try {
+		const parsedFrontmatter = frontmatter(note);
+		return parsedFrontmatter.attributes;
 	}
-	return notes;
+	catch (error){
+		console.error(`Error while parsing frontmatter`, error);
+		return {};
+	}
 }
