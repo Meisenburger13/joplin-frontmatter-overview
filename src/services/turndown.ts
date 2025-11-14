@@ -1,6 +1,6 @@
 import joplin from "api";
 import TurndownService from "turndown";
-import { tables } from "turndown-plugin-gfm";
+import { tables } from "@joplin/turndown-plugin-gfm";
 import { renderOverview } from "../services";
 
 function imagesToMarkdownPlugin(service: TurndownService) {
