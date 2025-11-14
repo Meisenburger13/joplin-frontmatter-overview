@@ -1,6 +1,6 @@
 import joplin from "../../api";
 import { getOverviewSettings } from "./overviewSettings";
-import { makeImages, makeLinks, getFrontmatter } from "../services";
+import { makeImages, linksToHtml, getFrontmatter } from "../services";
 import { getNotes, sortNotes } from "../utils";
 import { LINE_NUM, NOTE_LINK } from "../models";
 
@@ -50,7 +50,9 @@ export async function renderOverview(overview:string) {
 	// convert images to html
 	notes = await makeImages(notes, pluginSettings["width"], pluginSettings["height"]);
 	// convert Markdown links to html
-	notes = makeLinks(notes);
+	for (const note of notes) {
+		note.frontmatter = linksToHtml(note.frontmatter);
+	}
 
 	return makeTableOverview(overviewSettings.properties, notes);
 }

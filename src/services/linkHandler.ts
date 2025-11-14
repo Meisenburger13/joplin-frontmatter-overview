@@ -1,18 +1,14 @@
-export function makeLinks(notes) {
-	for (const note of notes) {
-		for (let [key, value] of Object.entries(note.frontmatter)) {
-			if (typeof value === "string") {
-				let strValue = value as string;
-				// Replace Markdown links with HTML links
-				const links = strValue.matchAll(/\[(.*?)]\((.*?)\)/g);
-				for (const [mdLink, title, url] of links) {
-					const titleDiv = document.createElement("div");
-					titleDiv.textContent = title;
-					strValue = strValue.replace(mdLink, `<a href="${url}">${titleDiv.innerHTML}</a>`);
-					note.frontmatter[key] = strValue;
-				}
-			}
+export function linksToHtml(frontmatter: any[]) {
+	for (const [key, value] of Object.entries(frontmatter)) {
+		if (typeof value !== "string") { continue; }
+
+		const links = value.matchAll(/\[(.*?)]\((.*?)\)/g);
+		for (const [mdLink, title, url] of links) {
+			const titleDiv = document.createElement("div");
+			titleDiv.textContent = title;
+			const htmlLink = `<a href="${url}">${titleDiv.innerHTML}</a>`;
+			frontmatter[key] = frontmatter[key].replace(mdLink, htmlLink);
 		}
 	}
-	return notes;
+	return frontmatter;
 }
