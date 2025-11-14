@@ -1,30 +1,17 @@
 import joplin from "api";
-import { isMobilePlatform } from "../utils";
+import { escapeHtml } from "../utils";
 
-export async function makeImages(notes, width, height) {
-	for (const note of notes) {
-		for (let [key, value] of Object.entries(note.frontmatter)) {
-			if (typeof value !== "string") { continue; }
+export async function imagesToHtml(frontmatter: any[], isMobile: boolean, width: any, height: any) {
+	for (const [key, value] of Object.entries(frontmatter)) {
+		if (typeof value !== "string") { continue; }
 
-			let strValue = value as string;
-			// Replace images with HTML
-			const images = strValue.matchAll(/!\[(.*?)]\(:\/([a-z0-9]{32})\)/g);
-			for (const [mdImage, alt, id] of images) {
-				const path = await joplin.data.resourcePath(id);
-				const imageDiv = document.createElement("div");
-				imageDiv.textContent = alt;
-				const isMobile = await isMobilePlatform();
-				let src:  string;
-				if (isMobile) {
-					src = `file:///`;
-				}
-				else {
-					src = `joplin-content://note-viewer/`;
-				}
-				strValue = strValue.replace(mdImage, `<img data-resource-id="${id}" src="${src}${path}" style="max-width: ${width}; max-height: ${height}" alt="${alt}">`);
-				note.frontmatter[key] = strValue;
-			}
+		const images = value.matchAll(/!\[(.*?)]\(:\/([a-z0-9]{32})\)/g);
+		for (const [mdImage, alt, id] of images) {
+			const path = await joplin.data.resourcePath(id);
+			const src = isMobile ? "file:///" : "joplin-content://note-viewer/";
+			const htmlImage = `<img data-resource-id="${id}" src="${src}${path}" style="max-width: ${width}; max-height: ${height}" alt="${escapeHtml(alt)}">`;
+			frontmatter[key] = frontmatter[key].replace(mdImage, htmlImage);
 		}
 	}
-	return notes;
+	return frontmatter;
 }

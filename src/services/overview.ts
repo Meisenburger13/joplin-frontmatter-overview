@@ -1,7 +1,7 @@
 import joplin from "../../api";
 import { getOverviewSettings } from "./overviewSettings";
-import { makeImages, linksToHtml, getFrontmatter } from "../services";
-import { getNotes, sortNotes } from "../utils";
+import { imagesToHtml, linksToHtml, getFrontmatter } from "../services";
+import { getNotes, isMobilePlatform, sortNotes } from "../utils";
 import { LINE_NUM, NOTE_LINK } from "../models";
 
 function makeTableOverview(properties, notes) {
@@ -31,6 +31,7 @@ function makeTableOverview(properties, notes) {
 
 export async function renderOverview(overview:string) {
 	const pluginSettings = await joplin.settings.values(["width", "height"]);
+	const isMobile = await isMobilePlatform();
 	const overviewSettings = getOverviewSettings(overview);
 	if (typeof overviewSettings === "string") { return overviewSettings; }
 	// get notes
@@ -47,10 +48,11 @@ export async function renderOverview(overview:string) {
 	if (overviewSettings.reverseSort) {
 		notes = notes.reverse();
 	}
-	// convert images to html
-	notes = await makeImages(notes, pluginSettings["width"], pluginSettings["height"]);
-	// convert Markdown links to html
+
 	for (const note of notes) {
+		// convert images to html
+		note.frontmatter = await imagesToHtml(note.frontmatter, isMobile, pluginSettings["width"], pluginSettings["height"]);
+		// convert Markdown links to html
 		note.frontmatter = linksToHtml(note.frontmatter);
 	}
 
