@@ -1,0 +1,36 @@
+import { LINE_NUM, NOTE_LINK } from "../models";
+import { escapeHtml } from "../utils";
+
+function getPropertyValue(note: any, property: any, line_number: number) {
+	let value = note.frontmatter[property] || "";
+	if (property === NOTE_LINK) {
+		value = `<a href=":/${note.id}">${escapeHtml(note.title)}</a>`;
+	}
+	else if (property === LINE_NUM) {
+		value = (line_number).toString();
+	}
+	return value;
+}
+
+export function makeTableHtml(properties: any[], notes: any[]) {
+	// make header with aliases
+	let tableHtml = "<table><thead><tr>";
+	for (const prop of properties) {
+		tableHtml += `<td> ${prop.alias} </td>`;
+	}
+	tableHtml += "</tr></thead>";
+
+	// add one row per note
+	notes.forEach((note, index)  => {
+		tableHtml += "<tr>";
+		for (const prop of properties) {
+			const propValue = getPropertyValue(note, prop.original, index + 1);
+			tableHtml += `<td> ${propValue} </td>`;
+		}
+		tableHtml += "</tr>";
+	});
+
+	// finish table
+	tableHtml += "</table>";
+	return tableHtml;
+}

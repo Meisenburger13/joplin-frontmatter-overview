@@ -1,33 +1,12 @@
 import joplin from "../../api";
 import { getOverviewSettings } from "./overviewSettings";
-import { imagesToHtml, linksToHtml, getFrontmatter } from "../services";
+import {
+	imagesToHtml,
+	linksToHtml,
+	getFrontmatter,
+	makeTableHtml
+} from "../services";
 import { getNotes, isMobilePlatform, sortNotes } from "../utils";
-import { LINE_NUM, NOTE_LINK } from "../models";
-
-function makeTableOverview(properties, notes) {
-	let tableOverview = "<table><thead>";
-	for (const prop of properties.map(subarray => subarray["alias"])) {
-		tableOverview += `<td> ${prop} </td>`;
-	}
-	tableOverview += "</thead>";
-	notes.forEach((note, index)  => {
-		for (const prop of properties.map(subarray => subarray["original"])) {
-			let propValue = note.frontmatter[prop] || "";
-			if (prop === NOTE_LINK) {
-				const titleDiv = (document.createElement("div"));
-				titleDiv.textContent = note.title;
-				propValue = `<a href=":/${note.id}">${titleDiv.innerHTML}</a>`;
-			}
-			else if (prop === LINE_NUM) {
-				propValue = (index + 1).toString();
-			}
-			tableOverview += `<td> ${propValue} </td>`;
-		}
-		tableOverview += "</tr>";
-	});
-	tableOverview += "</table>";
-	return tableOverview;
-}
 
 export async function renderOverview(overview:string) {
 	const pluginSettings = await joplin.settings.values(["width", "height"]);
@@ -56,5 +35,5 @@ export async function renderOverview(overview:string) {
 		note.frontmatter = linksToHtml(note.frontmatter);
 	}
 
-	return makeTableOverview(overviewSettings.properties, notes);
+	return makeTableHtml(overviewSettings.properties, notes);
 }
