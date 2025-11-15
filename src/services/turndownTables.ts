@@ -21,7 +21,7 @@ const turndownService = (() => {
 	return service;
 })();
 
-export async function makeTablesPermanent() {
+export async function turndownTables() {
 	const selectedNote = await joplin.workspace.selectedNote();
 	if (!selectedNote) { return; }
 

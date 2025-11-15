@@ -1,6 +1,6 @@
 import joplin from "api";
 import { ContentScriptType, SettingItemType } from "api/types";
-import { makeTablesPermanent, renderOverview } from "./services";
+import { turndownTables, renderOverview } from "./services";
 
 joplin.plugins.register({
 	onStart: async function() {
@@ -21,7 +21,7 @@ joplin.plugins.register({
 			name: "makeTablesPermanent",
 			label: "Make tables in current note permanent",
 			execute: async () => {
-				await makeTablesPermanent();
+				await turndownTables();
 			}
 		});
 
