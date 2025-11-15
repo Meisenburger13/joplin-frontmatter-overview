@@ -8,12 +8,12 @@ export async function isMobilePlatform(){
 		console.warn('Error checking whether the device is a mobile device. Assuming desktop.', error);
 		return false;
 	}
-};
+}
 
-export async function getNotes(query) {
+export async function getNotes(query: string) {
 	let notes = [];
 	let pageNum = 1;
-	let response;
+	let response: { items: any; has_more: boolean; };
 	do {
 		response = await joplin.data.get(["search"], {
 			query: query,
