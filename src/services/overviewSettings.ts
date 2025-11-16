@@ -6,22 +6,41 @@ import {
 	RENAME_INFIX
 } from "../models";
 
-function settingsValid(settings: overviewSettings): settings is overviewSettings {
-    return (
-        typeof settings === "object" &&
-        settings !== null &&
-        typeof settings.from === "string" &&
-        Array.isArray(settings.properties) &&
-        settings.properties.every((item) => typeof item === "string") &&
-		(settings.sort === undefined || typeof settings.sort === "string") &&
-		(settings.excludeEmpty === undefined || typeof settings.excludeEmpty === "boolean")
-    );
+function settingsValid(settings: any):
+	{ valid: true, value: overviewSettings } | { valid: false, error: string }
+{
+	if (typeof settings !== "object" || settings === undefined || settings.from === undefined || settings.properties === undefined) {
+		return { valid: false, error: "'from' and 'properties' are required for overview" };
+	}
+	if (typeof settings.from !== "string") {
+		return { valid: false, error: "'from' parameter must be a string" };
+	}
+	if (!Array.isArray(settings.properties)) {
+		return { valid: false, error: "'properties' must be valid YAML array" };
+	}
+	if (settings.properties.some((item: any) => typeof item !== "string")) {
+		return { valid: false, error: "'properties' values must be strings" };
+	}
+	if (settings.sort !== undefined && typeof settings.sort !== "string") {
+		return { valid: false, error: "'sort' must be a string" };
+	}
+	if (settings.excludeEmpty !== undefined && typeof settings.excludeEmpty !== "boolean") {
+		return { valid: false, error: "'excludeEmpty' must be a boolean" };
+	}
+	return { valid: true, value: settings };
 }
 
 function sortValid(overviewSettings: overviewSettings) {
-	return (overviewSettings.sort === undefined ||
-		overviewSettings.properties.some( (prop) => prop.original === overviewSettings.sort))
-	&& overviewSettings.sort !== LINE_NUM
+	if (overviewSettings.sort === undefined ) {
+		return { valid: true };
+	}
+	if (overviewSettings.sort === LINE_NUM) {
+		return { valid: false, error: `'sort' cannot be ${LINE_NUM}` };
+	}
+	if (overviewSettings.properties.every(prop => prop.original !== overviewSettings.sort)) {
+		return { valid: false, error: `'sort' must match one of the original property names.<br>To reverse the sort, add ' DESC' to the end of the name.` };
+	}
+	return { valid: true };
 }
 
 function getAliases(properties: string[]) {
@@ -45,12 +64,13 @@ export function getOverviewSettings(overview: string) {
 	}
 
 	// validate basic structure
-	if (!settingsValid(parsedYaml)) {
-		return "Invalid overview settings";
+	const areSettingsValid = settingsValid(parsedYaml);
+	if (areSettingsValid.valid === false) {
+		return "Invalid overview settings: " + areSettingsValid.error;
 	}
 
 	// type predicated
-	const overviewSettings = parsedYaml;
+	const overviewSettings = areSettingsValid.value;
 
 	// get aliases
 	overviewSettings.properties = getAliases(overviewSettings.properties);
@@ -62,8 +82,9 @@ export function getOverviewSettings(overview: string) {
 	}
 
 	// validate sort
-	if (!sortValid(overviewSettings)) {
-		return `Invalid sort parameter: Please check that it matches one of the original property names, except ${LINE_NUM}.`
+	const isSortValid = sortValid(overviewSettings)
+	if (isSortValid.valid === false) {
+		return "Invalid sort parameter: " + isSortValid.error;
 	}
 
 	return overviewSettings;
