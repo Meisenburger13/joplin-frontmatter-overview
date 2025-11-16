@@ -28,7 +28,11 @@ export async function renderOverview(overview: string) {
 
 	// filter empty?
 	if (overviewSettings.excludeEmpty) {
-		notes = notes.filter(note => Object.keys(note.frontmatter).length > 0);
+		notes = notes.filter(note => {
+			const frontmatterProperties = Object.keys(note.frontmatter);
+			const overviewProperties = new Set(overviewSettings.properties.map(p => p.original));
+			return frontmatterProperties.some(key => overviewProperties.has(key));
+		});
 	}
 
 	// sort
