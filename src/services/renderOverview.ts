@@ -6,7 +6,7 @@ import {
 	getFrontmatter,
 	makeTableHtml
 } from "../services";
-import { getNotes, isMobilePlatform, sortNotes } from "../utils";
+import { getNotes, isMobilePlatform, compareNotes } from "../utils";
 
 async function getResourcePath(id: string) {
 	return await joplin.data.resourcePath(id);
@@ -32,7 +32,7 @@ export async function renderOverview(overview: string) {
 	}
 
 	// sort
-	notes.sort((a, b) => sortNotes(a, b, overviewSettings.sort));
+	notes.sort((a, b) => compareNotes(a, b, overviewSettings.sort));
 	if (overviewSettings.reverseSort) notes.reverse();
 
 	// transform notes

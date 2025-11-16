@@ -1,14 +1,14 @@
-import { NOTE_LINK } from "../models/constants";
+import { NOTE_LINK } from "../models";
 
-export function sortNotes(a, b, sort) {
-	let valueA, valueB;
+export function compareNotes(noteA: any, noteB: any, sort: string) {
+	let valueA: string, valueB: string;
 
 	if (sort === NOTE_LINK) {
-		valueA = a.title;
-		valueB = b.title;
+		valueA = noteA.title;
+		valueB = noteB.title;
 	} else {
-		valueA = a.frontmatter[sort] ?? "";
-		valueB = b.frontmatter[sort] ?? "";
+		valueA = noteA.frontmatter[sort] ?? "";
+		valueB = noteB.frontmatter[sort] ?? "";
 	}
 
 	const isValueANumeric = !isNaN(Number(valueA));
