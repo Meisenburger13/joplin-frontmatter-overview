@@ -7,7 +7,7 @@ async function getPropertyValue(note: any, property: any, line_number: number) {
 	if (property === NOTE_LINK) {
 		value = `<a href=":/${note.id}">${escapeHtml(note.title)}</a>`;
 	} else if (property === LINE_NUM) {
-		value = (line_number).toString();
+		value = line_number.toString();
 	} else if (property === NUM_BACKLINKS) {
 		let number = 0;
 		let pageNum = 1;
