@@ -83,6 +83,7 @@ Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix the
 
 - `NOTE_LINK`: A clickable link to the note using its title.
 - `LINE_NUM`: The line number.
+- `NUM_BACKLINKS`: The number of notes that link to the current note.
 
 ---
 
