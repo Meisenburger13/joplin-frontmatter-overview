@@ -6,4 +6,5 @@ export interface overviewSettings {
 	excludeEmpty?: boolean;
 	sum?: string[];
 	count?: string[];
+	average?: string[];
 }

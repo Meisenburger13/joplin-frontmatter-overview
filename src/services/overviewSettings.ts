@@ -35,6 +35,9 @@ function settingsValid(settings: any):
 	if (settings.count !== undefined && !Array.isArray(settings.count)) {
 		return { valid: false, error: "'count' must be a valid YAML array" };
 	}
+	if (settings.average !== undefined && !Array.isArray(settings.average)) {
+		return { valid: false, error: "'average' must be a valid YAML array" };
+	}
 	return { valid: true, value: settings };
 }
 
@@ -75,6 +78,20 @@ function countValid(overviewSettings: overviewSettings) {
 	}
 	if (count.some(countProp => overviewSettings.properties.every(prop => prop.original !== countProp))) {
 		return { valid: false, error: "every item in 'count' must match one of the original property names." };
+	}
+	return { valid: true };
+}
+
+function averageValid(overviewSettings: overviewSettings) {
+	const average = overviewSettings.average;
+	if (average === undefined) {
+		return { valid: true };
+	}
+	if (average.includes(LINE_NUM) || average.includes(NOTE_LINK)) {
+		return { valid: false, error: `'average' cannot be used for ${LINE_NUM} or ${NOTE_LINK}` };
+	}
+	if (average.some(averageProp => overviewSettings.properties.every(prop => prop.original !== averageProp))) {
+		return { valid: false, error: "every item in 'average' must match one of the original property names." };
 	}
 	return { valid: true };
 }
@@ -128,6 +145,11 @@ export function getOverviewSettings(overview: string) {
 	const isCountValid = countValid(overviewSettings);
 	if (isCountValid.valid === false) {
 		return "Invalid count parameter: " + isCountValid.error;
+	}
+
+	const isAverageValid = averageValid(overviewSettings);
+	if (isAverageValid.valid === false) {
+		return "Invalid average parameter: " + isAverageValid.error;
 	}
 
 	return overviewSettings;

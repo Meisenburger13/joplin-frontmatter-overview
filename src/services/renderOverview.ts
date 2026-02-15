@@ -79,5 +79,5 @@ export async function renderOverview(overview: string) {
 		note.frontmatter = linksToHtml(note.frontmatter);
 	}
 
-	return makeTableHtml(overviewSettings.properties, notes, overviewSettings.sum || [], overviewSettings.count || []);
+	return makeTableHtml(overviewSettings.properties, notes, overviewSettings.sum || [], overviewSettings.count || [], overviewSettings.average || []);
 }
