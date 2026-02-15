@@ -67,8 +67,6 @@ export function getOverviewSettings(overview: string) {
 	if (areSettingsValid.valid === false) {
 		return "Invalid overview settings: " + areSettingsValid.error;
 	}
-
-	// type predicated
 	const overviewSettings = areSettingsValid.value;
 
 	// get aliases
