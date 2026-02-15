@@ -33,10 +33,7 @@ export async function renderOverview(overview: string) {
 
 	// filter empty?
 	if (overviewSettings.excludeEmpty) {
-		notes = notes.filter(note => {
-			const frontmatterProperties = Object.keys(note.frontmatter);
-			return frontmatterProperties.some(key => originalPropertyNames.includes(key));
-		});
+		notes = notes.filter(note => Object.keys(note.frontmatter).length > 0);
 	}
 
 	// get num_backlinks for sort
