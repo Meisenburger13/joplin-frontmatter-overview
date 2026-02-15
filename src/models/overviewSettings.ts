@@ -5,4 +5,5 @@ export interface overviewSettings {
 	reverseSort: boolean;
 	excludeEmpty?: boolean;
 	sum?: string[];
+	count?: string[];
 }

@@ -21,7 +21,13 @@ function getSum(property: string, notes: any[]) {
 	}, 0);
 }
 
-export async function makeTableHtml(properties: any[], notes: any[], sum: any[]) {
+function getCount(property: string, notes: any[]) {
+	return notes.reduce((acc, note) => {
+		return acc + (property in (note.frontmatter) ? 1 : 0);
+	}, 0);
+}
+
+export async function makeTableHtml(properties: any[], notes: any[], sum: string[], count: string[]) {
 	// make header with aliases
 	let tableHtml = "<table><thead><tr>";
 	for (const prop of properties) {
@@ -42,13 +48,17 @@ export async function makeTableHtml(properties: any[], notes: any[], sum: any[])
 	}
 
 	// add footer with aggregates
-	if (sum.length > 0) {
+	if (sum.length > 0 || count.length > 0) {
 		tableHtml += "<tfoot><tr>";
 		for (let prop of properties) {
 			tableHtml += "<td>";
 			if (sum.includes(prop)) {
 				const sumValue = getSum(prop, notes);
-				tableHtml += `<strong>Sum:</strong> ${sumValue}`;
+				tableHtml += `<strong>Sum:</strong> ${sumValue} <br>`;
+			}
+			if (count.includes(prop)) {
+				const countValue = getCount(prop, notes);
+				tableHtml += `<strong>Count:</strong> ${countValue}`;
 			}
 			tableHtml += "</td>";
 		}

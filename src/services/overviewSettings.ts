@@ -4,8 +4,8 @@ import {
 	NUM_BACKLINKS,
 	NOTE_LINK,
 	DESC_SUFFIX,
-	overviewSettings,
-	RENAME_INFIX
+	RENAME_INFIX,
+	overviewSettings
 } from "../models";
 
 function settingsValid(settings: any):
@@ -31,6 +31,9 @@ function settingsValid(settings: any):
 	}
 	if (settings.sum !== undefined && !Array.isArray(settings.sum)) {
 		return { valid: false, error: "'sum' must be a valid YAML array" };
+	}
+	if (settings.count !== undefined && !Array.isArray(settings.count)) {
+		return { valid: false, error: "'count' must be a valid YAML array" };
 	}
 	return { valid: true, value: settings };
 }
@@ -58,6 +61,20 @@ function sumValid(overviewSettings: overviewSettings) {
 	}
 	if (sum.some(sumProp => overviewSettings.properties.every(prop => prop.original !== sumProp))) {
 		return { valid: false, error: "every item in 'sum' must match one of the original property names." };
+	}
+	return { valid: true };
+}
+
+function countValid(overviewSettings: overviewSettings) {
+	const count = overviewSettings.count;
+	if (count === undefined) {
+		return { valid: true };
+	}
+	if (count.includes(LINE_NUM) || count.includes(NUM_BACKLINKS) || count.includes(NOTE_LINK)) {
+		return { valid: false, error: `'count' cannot be used for any of the special properties` };
+	}
+	if (count.some(countProp => overviewSettings.properties.every(prop => prop.original !== countProp))) {
+		return { valid: false, error: "every item in 'count' must match one of the original property names." };
 	}
 	return { valid: true };
 }
@@ -102,11 +119,15 @@ export function getOverviewSettings(overview: string) {
 	if (isSortValid.valid === false) {
 		return "Invalid sort parameter: " + isSortValid.error;
 	}
-
 	// validate sum
 	const isSumValid = sumValid(overviewSettings);
 	if (isSumValid.valid === false) {
 		return "Invalid sum parameter: " + isSumValid.error;
+	}
+	// validate count
+	const isCountValid = countValid(overviewSettings);
+	if (isCountValid.valid === false) {
+		return "Invalid count parameter: " + isCountValid.error;
 	}
 
 	return overviewSettings;
