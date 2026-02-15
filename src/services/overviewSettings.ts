@@ -42,13 +42,14 @@ function settingsValid(settings: any):
 }
 
 function sortValid(overviewSettings: overviewSettings) {
-	if (overviewSettings.sort === undefined ) {
+	const sort = overviewSettings.sort;
+	if (sort === undefined ) {
 		return { valid: true };
 	}
-	if (overviewSettings.sort === LINE_NUM) {
+	if (sort === LINE_NUM) {
 		return { valid: false, error: `'sort' cannot be ${LINE_NUM}` };
 	}
-	if (overviewSettings.properties.every(prop => prop.original !== overviewSettings.sort)) {
+	if (overviewSettings.properties.every(prop => prop.original !== sort)) {
 		return { valid: false, error: `'sort' must match one of the original property names.<br>To reverse the sort, add ' DESC' to the end of the name.` };
 	}
 	return { valid: true };
