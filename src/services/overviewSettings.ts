@@ -19,10 +19,10 @@ function settingsValid(settings: any):
 		return { valid: false, error: "'properties' must be valid YAML array" };
 	}
 	if (settings.properties.some((item: any) => typeof item !== "string")) {
-		return { valid: false, error: "'properties' values must be strings" };
+		return { valid: false, error: "'properties' values must be strings, try enclosing them in quotation marks" };
 	}
 	if (settings.sort !== undefined && typeof settings.sort !== "string") {
-		return { valid: false, error: "'sort' must be a string" };
+		return { valid: false, error: "'sort' must be a string, try enclosing the value in quotation marks" };
 	}
 	if (settings.excludeEmpty !== undefined && typeof settings.excludeEmpty !== "boolean") {
 		return { valid: false, error: "'excludeEmpty' must be a boolean" };
@@ -59,7 +59,6 @@ export function getOverviewSettings(overview: string) {
 		parsedYaml = yaml.load(overview);
 	}
 	catch (error) {
-		console.log("YAML parsing error:", error);
 		return `YAML parsing error: ${error.message}`;
 	}
 
