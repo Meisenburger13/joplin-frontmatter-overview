@@ -1,7 +1,8 @@
 export interface overviewSettings {
 	from: string;
-	properties: any;
+	properties: any[];
 	sort?: string;
 	reverseSort: boolean;
 	excludeEmpty?: boolean;
+	sum?: string[];
 }

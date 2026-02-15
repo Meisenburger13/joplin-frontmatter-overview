@@ -1,6 +1,8 @@
 import * as yaml from "js-yaml";
 import {
 	LINE_NUM,
+	NUM_BACKLINKS,
+	NOTE_LINK,
 	DESC_SUFFIX,
 	overviewSettings,
 	RENAME_INFIX
@@ -27,6 +29,9 @@ function settingsValid(settings: any):
 	if (settings.excludeEmpty !== undefined && typeof settings.excludeEmpty !== "boolean") {
 		return { valid: false, error: "'excludeEmpty' must be a boolean" };
 	}
+	if (settings.sum !== undefined && !Array.isArray(settings.sum)) {
+		return { valid: false, error: "'sum' must be a valid YAML array" };
+	}
 	return { valid: true, value: settings };
 }
 
@@ -39,6 +44,20 @@ function sortValid(overviewSettings: overviewSettings) {
 	}
 	if (overviewSettings.properties.every(prop => prop.original !== overviewSettings.sort)) {
 		return { valid: false, error: `'sort' must match one of the original property names.<br>To reverse the sort, add ' DESC' to the end of the name.` };
+	}
+	return { valid: true };
+}
+
+function sumValid(overviewSettings: overviewSettings) {
+	const sum = overviewSettings.sum;
+	if (sum === undefined) {
+		return { valid: true };
+	}
+	if (sum.includes(LINE_NUM) || sum.includes(NOTE_LINK)) {
+		return { valid: false, error: `'sum' cannot be used for ${LINE_NUM} or ${NOTE_LINK}` };
+	}
+	if (sum.some(sumProp => overviewSettings.properties.every(prop => prop.original !== sumProp))) {
+		return { valid: false, error: "every item in 'sum' must match one of the original property names." };
 	}
 	return { valid: true };
 }
@@ -79,9 +98,15 @@ export function getOverviewSettings(overview: string) {
 	}
 
 	// validate sort
-	const isSortValid = sortValid(overviewSettings)
+	const isSortValid = sortValid(overviewSettings);
 	if (isSortValid.valid === false) {
 		return "Invalid sort parameter: " + isSortValid.error;
+	}
+
+	// validate sum
+	const isSumValid = sumValid(overviewSettings);
+	if (isSumValid.valid === false) {
+		return "Invalid sum parameter: " + isSumValid.error;
 	}
 
 	return overviewSettings;
