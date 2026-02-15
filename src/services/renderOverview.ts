@@ -7,6 +7,7 @@ import {
 	makeTableHtml
 } from "../services";
 import { getNotes, isMobilePlatform, compareNotes } from "../utils";
+import { NUM_BACKLINKS } from "../models";
 
 async function getResourcePath(id: string) {
 	return await joplin.data.resourcePath(id);
@@ -33,6 +34,31 @@ export async function renderOverview(overview: string) {
 			const overviewProperties = new Set(overviewSettings.properties.map(p => p.original));
 			return frontmatterProperties.some(key => overviewProperties.has(key));
 		});
+	}
+
+	// get num_backlinks for sort
+	if (overviewSettings.properties.some(prop => prop.original === NUM_BACKLINKS)) {
+		await Promise.all(
+			notes.map(async (note) => {
+				let num_backlinks = 0;
+				let pageNum = 1;
+				let response: { items: any; has_more: boolean };
+
+				do {
+					response = await joplin.data.get(["search"], {
+						query: note.id,
+						type: "note",
+						page: pageNum,
+						fields: "id"
+					});
+					num_backlinks += response.items.length;
+					pageNum++;
+				} while (response.has_more);
+
+				note.frontmatter[NUM_BACKLINKS] = num_backlinks;
+			}
+		)
+    );
 	}
 
 	// sort

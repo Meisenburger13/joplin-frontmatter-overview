@@ -1,28 +1,15 @@
-import { LINE_NUM, NOTE_LINK, NUM_BACKLINKS } from "../models";
+import { LINE_NUM, NOTE_LINK } from "../models";
 import { escapeHtml } from "../utils";
-import joplin from "../../api";
 
 async function getPropertyValue(note: any, property: any, line_number: number) {
-	let value = note.frontmatter[property] || "";
+	let value = note.frontmatter[property];
 	if (property === NOTE_LINK) {
 		value = `<a href=":/${note.id}">${escapeHtml(note.title)}</a>`;
 	} else if (property === LINE_NUM) {
 		value = line_number.toString();
-	} else if (property === NUM_BACKLINKS) {
-		let number = 0;
-		let pageNum = 1;
-		let response: { items: any; has_more: boolean; };
-		do {
-			response = await joplin.data.get(["search"], {
-				query: note.id,
-				type: "note",
-				page: pageNum,
-				fields: "id"
-			});
-			number += response["items"].length;
-			pageNum++;
-		} while (response.has_more)
-		value = number.toString();
+	}
+	if (value === undefined || value === null) {
+		value = "";
 	}
 	return value;
 }
