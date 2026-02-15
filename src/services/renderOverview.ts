@@ -22,22 +22,21 @@ export async function renderOverview(overview: string) {
 
 	const overviewSettings = getOverviewSettings(overview);
 	if (typeof overviewSettings === "string") { return overviewSettings; }
-	const originalPropertyNames = overviewSettings.properties.map(p => p.original);
 
 	let notes = await getNotes(overviewSettings.from);
 
 	// parse frontmatter
 	for (const note of notes) {
-		note.frontmatter = getFrontmatter(note.body, originalPropertyNames);
+		note.frontmatter = getFrontmatter(note.body, overviewSettings.properties);
 	}
 
-	// filter empty?
+	// exclude empty?
 	if (overviewSettings.excludeEmpty) {
 		notes = notes.filter(note => Object.keys(note.frontmatter).length > 0);
 	}
 
 	// get num_backlinks for sort
-	if (overviewSettings.properties.some(prop => prop.original === NUM_BACKLINKS)) {
+	if (overviewSettings.properties.some(prop => prop === NUM_BACKLINKS)) {
 		await Promise.all(
 			notes.map(async (note) => {
 				let num_backlinks = 0;
@@ -79,5 +78,5 @@ export async function renderOverview(overview: string) {
 		note.frontmatter = linksToHtml(note.frontmatter);
 	}
 
-	return makeTableHtml(overviewSettings.properties, notes, overviewSettings.sum || [], overviewSettings.count || [], overviewSettings.average || []);
+	return makeTableHtml(overviewSettings, notes);
 }

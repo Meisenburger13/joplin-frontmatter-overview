@@ -1,4 +1,4 @@
-import { LINE_NUM, NOTE_LINK } from "../models";
+import { LINE_NUM, NOTE_LINK, overviewSettings } from "../models";
 import { escapeHtml } from "../utils";
 
 function getPropertyValue(note: any, property: string, line_number: number) {
@@ -34,20 +34,19 @@ function getAverage(property: string, notes: any[]) {
 	return values.length ? (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2) : 0;
 }
 
-export async function makeTableHtml(properties: any[], notes: any[], sum: string[], count: string[], average: string[]) {
+export async function makeTableHtml(overview: overviewSettings, notes: any[]) {
 	// make header with aliases
 	let tableHtml = "<table><thead><tr>";
-	for (const prop of properties) {
-		tableHtml += `<td> ${prop.alias} </td>`;
+	for (const header of overview.headers) {
+		tableHtml += `<td> ${header} </td>`;
 	}
 	tableHtml += "</tr></thead>";
-	properties = properties.map(prop => prop.original);
 
 	// add one row per note
 	for (const note of notes) {
 		const index = notes.indexOf(note);
 		tableHtml += "<tr>";
-		for (const prop of properties) {
+		for (const prop of overview.properties) {
 			const propValue = getPropertyValue(note, prop, index + 1);
 			tableHtml += `<td> ${propValue} </td>`;
 		}
@@ -55,19 +54,19 @@ export async function makeTableHtml(properties: any[], notes: any[], sum: string
 	}
 
 	// add footer with aggregates
-	if (sum.length > 0 || count.length > 0 || average.length > 0) {
+	if (overview.sum.length > 0 || overview.count.length > 0 || overview.average.length > 0) {
 		tableHtml += "<tfoot><tr>";
-		for (let prop of properties) {
+		for (let prop of overview.properties) {
 			tableHtml += "<td>";
-			if (count.includes(prop)) {
+			if (overview.count.includes(prop)) {
 				const countValue = getCount(prop, notes);
 				tableHtml += `<strong>Count:</strong> ${countValue} <br>`;
 			}
-			if (sum.includes(prop)) {
+			if (overview.sum.includes(prop)) {
 				const sumValue = getSum(prop, notes);
 				tableHtml += `<strong>Sum:</strong> ${sumValue} <br>`;
 			}
-			if (average.includes(prop)) {
+			if (overview.average.includes(prop)) {
 				const averageValue = getAverage(prop, notes);
 				tableHtml += `<strong>Average:</strong> ${averageValue} <br>`;
 			}
