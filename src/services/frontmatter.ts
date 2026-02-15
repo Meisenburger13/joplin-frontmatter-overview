@@ -12,13 +12,19 @@ const escapeLinksInFrontmatter = (note: string) => {
 		});
 }
 
-export function getFrontmatter(note: string) {
+/**
+ * Returns an object with key-value pairs of the frontmatter properties that
+ * are present in both the given note and the given properties.
+ *
+ * @param note the given note
+ * @param properties a string array with property names
+ */
+export function getFrontmatter(note: string, properties: string[]) {
 	note = escapeLinksInFrontmatter(note);
 	try {
 		const parsedFrontmatter = frontmatter(note);
-		return parsedFrontmatter.attributes;
-	}
-	catch (error){
+		return Object.fromEntries(Object.entries(parsedFrontmatter.attributes).filter(([key]) => properties.includes(key)));
+	} catch (error) {
 		console.error(`Error while parsing frontmatter`, error);
 		return {};
 	}

@@ -22,20 +22,20 @@ export async function renderOverview(overview: string) {
 
 	const overviewSettings = getOverviewSettings(overview);
 	if (typeof overviewSettings === "string") { return overviewSettings; }
+	const originalPropertyNames = overviewSettings.properties.map(p => p.original);
 
 	let notes = await getNotes(overviewSettings.from);
 
 	// parse frontmatter
 	for (const note of notes) {
-		note.frontmatter = getFrontmatter(note.body);
+		note.frontmatter = getFrontmatter(note.body, originalPropertyNames);
 	}
 
 	// filter empty?
 	if (overviewSettings.excludeEmpty) {
 		notes = notes.filter(note => {
 			const frontmatterProperties = Object.keys(note.frontmatter);
-			const overviewProperties = new Set(overviewSettings.properties.map(p => p.original));
-			return frontmatterProperties.some(key => overviewProperties.has(key));
+			return frontmatterProperties.some(key => originalPropertyNames.includes(key));
 		});
 	}
 
