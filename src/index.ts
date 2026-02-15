@@ -4,7 +4,7 @@ import { turndownTables, renderOverview } from "./services";
 
 joplin.plugins.register({
 	onStart: async function() {
-		console.log("frontmatter overview started!")
+		console.log("frontmatter-overview started!")
 
 		await joplin.contentScripts.onMessage("frontmatter-overview", async (overviewString) => {
 			const overview = decodeURI(overviewString);

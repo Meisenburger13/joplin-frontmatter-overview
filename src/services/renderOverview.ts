@@ -11,7 +11,7 @@ import { NUM_BACKLINKS } from "../models";
 
 async function getResourcePath(id: string) {
 	return joplin.data.resourcePath(id).catch(error => {
-		console.error("resource not available", error);
+		console.error("frontmatter-overview get resource:", error);
 		return "";
 	});
 }

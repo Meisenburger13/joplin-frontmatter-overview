@@ -25,7 +25,7 @@ export function getFrontmatter(note: string, properties: string[]) {
 		const parsedFrontmatter = frontmatter(note);
 		return Object.fromEntries(Object.entries(parsedFrontmatter.attributes).filter(([key]) => properties.includes(key)));
 	} catch (error) {
-		console.error(`Error while parsing frontmatter`, error);
+		console.error(`frontmatter-overview parsing frontmatter:`, error);
 		return {};
 	}
 }
