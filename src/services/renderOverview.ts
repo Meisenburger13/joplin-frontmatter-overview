@@ -10,7 +10,10 @@ import { getNotes, isMobilePlatform, compareNotes } from "../utils";
 import { NUM_BACKLINKS } from "../models";
 
 async function getResourcePath(id: string) {
-	return await joplin.data.resourcePath(id);
+	return joplin.data.resourcePath(id).catch(error => {
+		console.error("resource not available", error);
+		return "";
+	});
 }
 
 export async function renderOverview(overview: string) {
