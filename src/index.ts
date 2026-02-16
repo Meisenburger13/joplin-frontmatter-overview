@@ -6,7 +6,7 @@ joplin.plugins.register({
 	onStart: async function() {
 		console.log("frontmatter-overview started!")
 
-		await joplin.contentScripts.onMessage("frontmatter-overview", async (overviewString) => {
+		await joplin.contentScripts.onMessage("frontmatter-overview", async (overviewString: string) => {
 			const overview = decodeURI(overviewString);
 			return await renderOverview(overview);
 		});

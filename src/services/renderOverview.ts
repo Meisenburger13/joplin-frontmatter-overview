@@ -1,27 +1,30 @@
 import joplin from "../../api";
 import { getOverviewSettings } from "./overviewSettings";
 import {
-	imagesToHtml,
-	linksToHtml,
 	getFrontmatter,
 	makeTableHtml
 } from "../services";
-import { getNotes, isMobilePlatform, compareNotes } from "../utils";
+import {
+	compareNotes,
+	getNotes,
+	imagesToHtml,
+	isMobilePlatform,
+	linksToHtml
+} from "../utils";
 import { NUM_BACKLINKS } from "../models";
 
-async function getResourcePath(id: string) {
-	return joplin.data.resourcePath(id).catch(error => {
-		console.error("frontmatter-overview get resource:", error);
-		return "";
-	});
-}
-
+/**
+ * Main method of the plugin, calls other methods to validate, parse and render
+ * the overview.
+ *
+ * @param overview the given content of the overview block
+ */
 export async function renderOverview(overview: string) {
 	const { width, height } = await joplin.settings.values(["width", "height"]);
 	const isMobile = await isMobilePlatform();
 
 	const overviewSettings = getOverviewSettings(overview);
-	if (typeof overviewSettings === "string") { return overviewSettings; }
+	if (typeof overviewSettings === "string") return overviewSettings;
 
 	let notes = await getNotes(overviewSettings.from);
 
@@ -56,7 +59,7 @@ export async function renderOverview(overview: string) {
 
 				note.frontmatter[NUM_BACKLINKS] = num_backlinks;
 			})
-    	);
+		);
 	}
 
 	// sort
@@ -69,8 +72,7 @@ export async function renderOverview(overview: string) {
 			note.frontmatter,
 			isMobile,
 			width,
-			height,
-			getResourcePath
+			height
 		);
 		// convert links to html
 		note.frontmatter = linksToHtml(note.frontmatter);

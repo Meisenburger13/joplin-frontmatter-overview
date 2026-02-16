@@ -4,9 +4,9 @@ import {
 	NUM_BACKLINKS,
 	NOTE_LINK,
 	DESC_SUFFIX,
-	RENAME_INFIX,
 	overviewSettings
 } from "../models";
+import { getHeaders } from "../utils";
 
 function normalizeSort(sort: string | string[] | undefined): overviewSettings['sort'] {
 	if (!sort) return [];
@@ -103,20 +103,13 @@ function averageValid(average: overviewSettings['average'], properties: overview
 	return { valid: true };
 }
 
-function getHeaders(properties: string[]) {
-	const split = properties.map((property) => {
-		const [original, alias] = property.split(RENAME_INFIX).map(s => s.trim());
-		return {
-			original: original,
-			alias: alias || original
-		};
-	});
-	const props = split.map(p => p.original);
-	const headers = split.map(p => p.alias);
-
-	return [props, headers];
-}
-
+/**
+ * Parses the given overview as yaml and validates the syntax.
+ * If it's invalid a string is returned with the error message.
+ * Otherwise, a correctly typed instance of {@code overviewSettings} is returned.
+ *
+ * @param overview the given content of the overview block
+ */
 export function getOverviewSettings(overview: string) {
 	let parsedYaml: any;
 	try {
