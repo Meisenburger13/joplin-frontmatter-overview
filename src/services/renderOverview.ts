@@ -62,7 +62,6 @@ export async function renderOverview(overview: string) {
 
 	// sort
 	notes.sort((a, b) => compareNotes(a, b, overviewSettings.sort));
-	if (overviewSettings.reverseSort) notes.reverse();
 
 	// transform notes
 	for (const note of notes) {

@@ -8,6 +8,29 @@ import {
 	overviewSettings
 } from "../models";
 
+function normalizeSort(sort: string | string[] | undefined):
+	{ name: string, reversed: boolean }[]
+{
+	if (!sort) return [];
+	if (typeof sort === "string") sort = [sort];
+	if (Array.isArray(sort)) {
+		return sort.map(item => {
+			const trimmed = item.trim();
+			if (trimmed.endsWith(DESC_SUFFIX)) {
+				return {
+					name: trimmed.slice(0, -DESC_SUFFIX.length).trim(),
+					reversed: true
+				};
+			}
+			return {
+				name: trimmed,
+				reversed: false
+			};
+		});
+	}
+	return undefined;
+}
+
 function settingsValid(settings: any):
 	{ valid: true, value: overviewSettings } | { valid: false, error: string }
 {
@@ -23,8 +46,9 @@ function settingsValid(settings: any):
 	if (settings.properties.some((item: any) => typeof item !== "string")) {
 		return { valid: false, error: "'properties' values must be strings, try enclosing them in quotation marks" };
 	}
-	if (settings.sort !== undefined && typeof settings.sort !== "string") {
-		return { valid: false, error: "'sort' must be a string, try enclosing the value in quotation marks" };
+	// sort is normalized before, so should always be an array
+	if (!Array.isArray(settings.sort)) {
+		return { valid: false, error: "'sort' must be a string or a YAML array" };
 	}
 	if (settings.excludeEmpty !== undefined && typeof settings.excludeEmpty !== "boolean") {
 		return { valid: false, error: "'excludeEmpty' must be a boolean" };
@@ -43,14 +67,11 @@ function settingsValid(settings: any):
 
 function sortValid(overviewSettings: overviewSettings) {
 	const sort = overviewSettings.sort;
-	if (sort === undefined ) {
-		return { valid: true };
-	}
-	if (sort === LINE_NUM) {
+	if (sort.some(s => s.name === LINE_NUM)) {
 		return { valid: false, error: `'sort' cannot be ${LINE_NUM}` };
 	}
-	if (overviewSettings.properties.every(prop => prop !== sort)) {
-		return { valid: false, error: `'sort' must match one of the original property names.<br>To reverse the sort, add ' DESC' to the end of the name.` };
+	if (sort.some(s => overviewSettings.properties.every(prop => prop !== s.name))) {
+		return { valid: false, error: `every item in 'sort' must match one of the original property names.<br>To reverse the sort, add ' DESC' to the end of the name.` };
 	}
 	return { valid: true };
 }
@@ -111,6 +132,8 @@ export function getOverviewSettings(overview: string) {
 		return `YAML parsing error: ${error.message}`;
 	}
 
+	// normalize sort
+	parsedYaml.sort = normalizeSort(parsedYaml.sort);
 	// validate basic structure
 	const areSettingsValid = settingsValid(parsedYaml);
 	if (areSettingsValid.valid === false) {
@@ -120,12 +143,6 @@ export function getOverviewSettings(overview: string) {
 
 	// get aliases
 	[overviewSettings.properties, overviewSettings.headers] = getHeaders(overviewSettings.properties);
-
-	// sort DESC?
-	if (overviewSettings.sort && overviewSettings.sort.endsWith(DESC_SUFFIX)) {
-		overviewSettings.reverseSort = true;
-		overviewSettings.sort = overviewSettings.sort.slice(0, -DESC_SUFFIX.length).trim();
-	}
 
 	// validate sort
 	const isSortValid = sortValid(overviewSettings);

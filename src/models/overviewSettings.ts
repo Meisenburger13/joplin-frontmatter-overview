@@ -2,8 +2,10 @@ export interface overviewSettings {
 	from: string;
 	properties: string[];
 	headers: string[];
-	sort?: string;
-	reverseSort: boolean;
+	sort: {
+		name: string,
+		reversed: boolean
+	}[];
 	excludeEmpty: boolean;
 	sum: string[];
 	count: string[];

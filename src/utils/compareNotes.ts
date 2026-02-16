@@ -1,28 +1,45 @@
 import { NOTE_LINK } from "../models";
 
-export function compareNotes(noteA: any, noteB: any, sort: string) {
-	let valueA: string, valueB: string;
-
-	if (sort === NOTE_LINK) {
-		valueA = noteA.title;
-		valueB = noteB.title;
-	} else {
-		valueA = noteA.frontmatter[sort] ?? "";
-		valueB = noteB.frontmatter[sort] ?? "";
-	}
-
-	const isValueANumeric = !isNaN(Number(valueA));
-	const isValueBNumeric = !isNaN(Number(valueB));
+function compareValues(a: any, b: any) {
+	const isValueANumeric = !isNaN(Number(a));
+	const isValueBNumeric = !isNaN(Number(b));
 	if (isValueANumeric && isValueBNumeric) {
 		// Both are numbers → compare numerically
-		return Number(valueA) - Number(valueB);
-	} else if (typeof valueA === "string" && typeof valueB === "string") {
+		return Number(a) - Number(b);
+	}
+	if (typeof a === "string" && typeof b === "string") {
 		// Both are strings → compare using localeCompare
-		return valueA.localeCompare(valueB, undefined, { numeric: true });
-	} else if (isValueANumeric) {
+		return a.localeCompare(b, undefined, { numeric: true });
+	}
+	if (isValueANumeric) {
 		// One is a number, the other is a string → prioritize numbers
 		return -1;
-	} else {
+	}
+	if (isValueBNumeric) {
 		return 1;
 	}
+	return 0;
+}
+
+export function compareNotes(noteA: any, noteB: any, sort: { name: string, reversed: boolean }[]) {
+	for (const rule of sort) {
+		let valueA: any;
+		let valueB: any;
+
+		if (rule.name === NOTE_LINK) {
+			valueA = noteA.title ?? "";
+			valueB = noteB.title ?? "";
+		} else {
+			valueA = noteA.frontmatter[rule.name] ?? "";
+			valueB = noteB.frontmatter[rule.name] ?? "";
+		}
+
+		const result = compareValues(valueA, valueB);
+
+		if (result !== 0) {
+			return rule.reversed ? -result : result;
+		}
+	}
+	// All sort fields equal
+	return 0;
 }
