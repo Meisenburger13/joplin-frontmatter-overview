@@ -29,20 +29,6 @@ Will generate this table:
 | 1      | [Note 1]() | Book 1       |          | 5 |
 | 2      | [Note 2]() | Book 2       | Author 2 | 2 |
 
----
-
-## Usage
-
-To create a frontmatter-based table:
-
-1. Use a fenced code block with the language set to `frontmatter-overview`.
-2. Inside, define:
-   - `from`: a [Joplin search query](https://joplinapp.org/help/apps/search/) to select notes, each note will become a row in the table.
-   - `properties`: list of frontmatter fields to include as table columns.
-     - Use `AS` to rename columns (`author AS Author`).
-   - `sort`: (optional) sort the table by any property.
-
-You can place multiple of these blocks in one note.
 
 > ❗**Does not work in Rich Text (WYSIWYG) editor.** ❗ 
 
@@ -64,18 +50,23 @@ rating: 5
 This plugin supports Markdown links and images in the frontmatter, although they are not valid YAML.
 Images need to be Joplin resources in order to be rendered correctly.  
 A note with invalid YAML syntax will be shown with empty values in the custom properties.
-Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix the syntax.
+> Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix their frontmatter.
 
 ---
 
 ## Overview Block Options
+Using a code block with the language set to `frontmatter-overview` will trigger this
+plugin to render a table in the viewer.
 
-| Key            | Description                                                                                                                                                            |
-|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `from`         | Joplin search filter based on this [syntax](https://joplinapp.org/help/apps/search/) — all matching notes become a row in the table.                                   |
-| `properties`   | List of frontmatter fields or [special properties](#special-properties) — each will be a column in the table.<br> Use `AS` to rename the property in the table header. |
-| `sort`         | (Optional) Sort the table by a property (add `DESC` for descending). <br> Value needs to match one of the original property names.                                     |
-| `excludeEmpty` | (Optional) Exclude notes without frontmatter from overview. <br> Value is a boolean, default `False`.                                                                  |
+| Key              | Description                                                                                                                                                                         | Type                       |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|
+| `from`           | Joplin search filter based on [this syntax](https://joplinapp.org/help/apps/search/) — all matching notes will turn into a row in the table.                                        | `string`                   |
+| `properties`     | List of frontmatter fields or [special properties](#special-properties) — each will be a column in the rendered table.<br><br> Use `AS` to rename the property in the table header. | `array`                    |
+| `sort`           | (Optional) Sort the table by a property (add `DESC` for descending). <br> Values need to match one of the original property names.                                                  | `string` or `array`        |                                                                                                                                            
+| `excludeEeempty` | (Optional) Exclude notes without any of the relevant frontmatter properties from the overview.                                                                                      | `boolean`, default `false` |
+| `count`          | (Optional) Add a count of the non-empty values of a property to the footer of the table.<br> Values need to match one of the original property names.                               | `array`                    | 
+| `sum`            | (Optional) Add the sum of a property to the footer of the table. Non-numerical values are ignored.<br> Values need to match one of the original property names.                     | `array`                    |
+| `average`        | (Optional) Add the average of a property to the footer of the table. Non-numerical values are ignored.<br> Values need to match one of the original property names.                 | `array`                    |
 
 ---
 
@@ -91,10 +82,10 @@ Tip: Add the `NOTE_LINK` column to easily find the problematic notes and fix the
 
 - Embed multiple tables per note.
 - Create permanent tables via `Tools → Frontmatter Overview → Make tables in current note permanent` (desktop only).
-- Notes missing a property will have an empty cell.
+- Notes missing a property will have an empty cell, so there's no need to have perfect frontmatter in all notes.
 - Notes with invalid frontmatter are included with empty custom property values (special properties like `NOTE_LINK` still work).
 - The note containing the code block is excluded from the search.
-- Set the maximum width and height of images in the settings.
+- Set the maximum width and/or height of images in the settings.
 
 ---
 
