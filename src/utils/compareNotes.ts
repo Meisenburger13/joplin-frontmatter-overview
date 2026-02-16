@@ -1,4 +1,4 @@
-import { NOTE_LINK } from "../models";
+import { NOTE_LINK, overviewSettings } from "../models";
 
 function compareValues(a: any, b: any) {
 	const isValueANumeric = !isNaN(Number(a));
@@ -21,7 +21,7 @@ function compareValues(a: any, b: any) {
 	return 0;
 }
 
-export function compareNotes(noteA: any, noteB: any, sort: { name: string, reversed: boolean }[]) {
+export function compareNotes(noteA: any, noteB: any, sort: overviewSettings['sort']) {
 	for (const rule of sort) {
 		let valueA: any;
 		let valueB: any;

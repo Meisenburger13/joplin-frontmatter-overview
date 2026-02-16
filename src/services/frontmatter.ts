@@ -2,6 +2,8 @@
 // are declared incorrectly which result in typescript errors.
 // Reference -> https://github.com/jxson/front-matter/issues/76
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+import { overviewSettings } from "../models";
+
 const frontmatter = require("front-matter");
 
 const escapeLinksInFrontmatter = (note: string) => {
@@ -19,7 +21,7 @@ const escapeLinksInFrontmatter = (note: string) => {
  * @param note the given note
  * @param properties a string array with property names
  */
-export function getFrontmatter(note: string, properties: string[]) {
+export function getFrontmatter(note: string, properties: overviewSettings['properties']) {
 	note = escapeLinksInFrontmatter(note);
 	try {
 		const parsedFrontmatter = frontmatter(note);

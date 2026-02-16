@@ -55,9 +55,8 @@ export async function renderOverview(overview: string) {
 				} while (response.has_more);
 
 				note.frontmatter[NUM_BACKLINKS] = num_backlinks;
-			}
-		)
-    );
+			})
+    	);
 	}
 
 	// sort
