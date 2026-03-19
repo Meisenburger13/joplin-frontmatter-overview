@@ -4,3 +4,4 @@ export * from "./getHeaders";
 export * from "./imagesToHtml";
 export * from "./joplinUtils";
 export * from "./linksToHtml";
+export * from "./normalizeSettings";

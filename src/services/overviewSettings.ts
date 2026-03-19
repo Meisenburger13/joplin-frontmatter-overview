@@ -3,33 +3,9 @@ import {
 	LINE_NUM,
 	NUM_BACKLINKS,
 	NOTE_LINK,
-	DESC_SUFFIX,
 	overviewSettings
 } from "../models";
-import { getHeaders } from "../utils";
-
-function normalizeSort(yaml: any): overviewSettings['sort'] {
-	if (!('sort' in yaml)) return [];
-
-	let sort = yaml.sort;
-	if (typeof sort === "string") sort = [sort];
-	if (Array.isArray(sort)) {
-		return sort.map(item => {
-			const trimmed = item.trim();
-			if (trimmed.endsWith(DESC_SUFFIX)) {
-				return {
-					name: trimmed.slice(0, -DESC_SUFFIX.length).trim(),
-					reversed: true
-				};
-			}
-			return {
-				name: trimmed,
-				reversed: false
-			};
-		});
-	}
-	return undefined;
-}
+import { getHeaders, normalizeSettings } from "../utils";
 
 function settingsValid(settings: any):
 	{ valid: true, value: overviewSettings } | { valid: false, error: string }
@@ -121,10 +97,9 @@ export function getOverviewSettings(overview: string) {
 		return `YAML parsing error: ${error.message}`;
 	}
 
-	// normalize sort
-	if (parsedYaml != null) {
-		parsedYaml.sort = normalizeSort(parsedYaml);
-	}
+	// normalize parameters
+	parsedYaml = normalizeSettings(parsedYaml);
+
 	// validate basic structure
 	const areSettingsValid = settingsValid(parsedYaml);
 	if (areSettingsValid.valid === false) {
