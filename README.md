@@ -64,9 +64,9 @@ plugin to render a table in the viewer.
 | `properties`     | List of frontmatter fields or [special properties](#special-properties) — each will be a column in the rendered table.<br><br> Use `AS` to rename the property in the table header. | `array`                    |
 | `sort`           | (Optional) Sort the table by a property (add `DESC` for descending). <br> Values need to match one of the original property names.                                                  | `string` or `array`        |                                                                                                                                            
 | `excludeEeempty` | (Optional) Exclude notes without any of the relevant frontmatter properties from the overview.                                                                                      | `boolean`, default `false` |
-| `count`          | (Optional) Add a count of the non-empty values of a property to the footer of the table.<br> Values need to match one of the original property names.                               | `array`                    | 
-| `sum`            | (Optional) Add the sum of a property to the footer of the table. Non-numerical values are ignored.<br> Values need to match one of the original property names.                     | `array`                    |
-| `average`        | (Optional) Add the average of a property to the footer of the table. Non-numerical values are ignored.<br> Values need to match one of the original property names.                 | `array`                    |
+| `count`          | (Optional) Add a count of the non-empty values of a property to the footer of the table.<br> Values need to match one of the original property names.                               | `string` or `array`        | 
+| `sum`            | (Optional) Add the sum of a property to the footer of the table. Non-numerical values are ignored.<br> Values need to match one of the original property names.                     | `string` or `array`        |
+| `average`        | (Optional) Add the average of a property to the footer of the table. Non-numerical values are ignored.<br> Values need to match one of the original property names.                 | `string` or `array`        |
 
 ---
 
