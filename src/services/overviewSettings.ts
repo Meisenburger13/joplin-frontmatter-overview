@@ -1,4 +1,4 @@
-import * as yaml from "js-yaml";
+import { parse } from "yaml";
 import {
 	LINE_NUM,
 	NUM_BACKLINKS,
@@ -8,8 +8,10 @@ import {
 } from "../models";
 import { getHeaders } from "../utils";
 
-function normalizeSort(sort: string | string[] | undefined): overviewSettings['sort'] {
-	if (!sort) return [];
+function normalizeSort(yaml: any): overviewSettings['sort'] {
+	if (!('sort' in yaml)) return [];
+
+	let sort = yaml.sort;
 	if (typeof sort === "string") sort = [sort];
 	if (Array.isArray(sort)) {
 		return sort.map(item => {
@@ -32,7 +34,7 @@ function normalizeSort(sort: string | string[] | undefined): overviewSettings['s
 function settingsValid(settings: any):
 	{ valid: true, value: overviewSettings } | { valid: false, error: string }
 {
-	if (typeof settings !== "object" || settings === undefined || settings.from === undefined || settings.properties === undefined) {
+	if (settings === null || typeof settings !== "object" || settings.from === undefined || settings.properties === undefined) {
 		return { valid: false, error: "'from' and 'properties' are required for overview" };
 	}
 	if (typeof settings.from !== "string") {
@@ -113,14 +115,16 @@ function averageValid(average: overviewSettings['average'], properties: overview
 export function getOverviewSettings(overview: string) {
 	let parsedYaml: any;
 	try {
-		parsedYaml = yaml.load(overview);
+		parsedYaml = parse(overview);
 	}
 	catch (error) {
 		return `YAML parsing error: ${error.message}`;
 	}
 
 	// normalize sort
-	parsedYaml.sort = normalizeSort(parsedYaml.sort);
+	if (parsedYaml != null) {
+		parsedYaml.sort = normalizeSort(parsedYaml);
+	}
 	// validate basic structure
 	const areSettingsValid = settingsValid(parsedYaml);
 	if (areSettingsValid.valid === false) {
