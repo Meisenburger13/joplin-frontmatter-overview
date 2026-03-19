@@ -14,6 +14,10 @@ const escapeLinksInFrontmatter = (note: string) => {
 		});
 }
 
+const replaceUnderlines = (note: string)=> {
+	return note.replace(/___\n/g, "---\n");
+}
+
 /**
  * Returns an object with key-value pairs of the frontmatter properties that
  * are present in both the given note and the given properties.
@@ -23,6 +27,7 @@ const escapeLinksInFrontmatter = (note: string) => {
  */
 export function getFrontmatter(note: string, properties: overviewSettings['properties']) {
 	note = escapeLinksInFrontmatter(note);
+	note = replaceUnderlines(note);
 	try {
 		const parsedFrontmatter = frontmatter(note);
 		return Object.fromEntries(Object.entries(parsedFrontmatter.attributes).filter(([key]) => properties.includes(key)));
