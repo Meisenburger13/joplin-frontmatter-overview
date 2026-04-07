@@ -3,32 +3,37 @@ Create dynamic tables based on frontmatter in your notes. Works on both desktop 
 
 ## Quick Example
 
-Given these two notes in a notebook called `Books 2025`:
+Given these two notes in a notebook called `Books read`:
 
-| Note 1                                                                            | Note 2                                                                      |
-|-----------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| <pre>---<br>title: Book 1<br>rating: 5<br><br>---<br>Thoughts about book...</pre> | <pre>---<br>title: Book 2<br>author: Author 2<br>rating: 2<br><br>---</pre> |
+| Note 1                                                                                      | Note 2                                                                                |
+|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| <pre>---<br>title: Book 1<br>rating: 5<br>pages: 200<br>---<br>Thoughts about book...</pre> | <pre>---<br>title: Book 2<br>pages: 300<br>author: Author 2<br>rating: 2<br>---</pre> |
 
 Using the following code block in a note:
   
     ```frontmatter-overview
-    from: notebook:"Books 2025"
+    from: notebook:"Books read"
     properties:
       - LINE_NUM AS Number
       - NOTE_LINK AS Title
       - title AS Book
       - author
       - rating AS ⭐
+      - pages
     sort: rating DESC
+    sum: pages 
+    average: 
+    - pages
+    - rating
     ```
 
 Will generate this table:
 
-| Number | Title      | Book         | author   | ⭐ |
-|--------|------------|--------------|----------|---|
-| 1      | [Note 1]() | Book 1       |          | 5 |
-| 2      | [Note 2]() | Book 2       | Author 2 | 2 |
-
+| Number | Title      | Book   | author   | ⭐                 | pages                                 |
+|--------|------------|--------|----------|-------------------|---------------------------------------|
+| 1      | [Note 1]() | Book 1 |          | 5                 | 200                                   |
+| 2      | [Note 2]() | Book 2 | Author 2 | 2                 | 300                                   |
+|        |            |        |          | **Average:** 3.50 | **Sum:** 500  <br>**Average:** 250.00 |
 
 > ❗**Does not work in Rich Text (WYSIWYG) editor.** ❗ 
 
@@ -37,16 +42,15 @@ Will generate this table:
 ## What is Frontmatter?
 
 Frontmatter is a block of YAML metadata at the top of a note, enclosed in triple dashes:
-Since Joplin doesn't natively support frontmatter, it's best to leave a new line after the last property, so that it's not rendered as a header.
 
 ```yaml
 ---
 title: Example
 rating: 5
-
 ---
 ```
 
+You can also use three underscores instead of dashes as delimiters for the frontmatter if [Joplin's syntax highlighting](https://discourse.joplinapp.org/t/frontmatter-highlighting-in-new-prerelease-doesnt-render-links-or-images/48943) is an issue for you.
 This plugin supports Markdown links and images in the frontmatter, although they are not valid YAML.
 Images need to be Joplin resources in order to be rendered correctly.  
 A note with invalid YAML syntax will be shown with empty values in the custom properties.
